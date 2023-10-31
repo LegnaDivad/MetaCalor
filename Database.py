@@ -6,6 +6,9 @@ import mysql.connector
 class Config:
     '''Configurar conexion'''
 
+    def __init__(self):
+        self.connection = any
+
     def connect(self):
         '''Conectar a la base de datos'''
         self.connection = mysql.connector.connect(
