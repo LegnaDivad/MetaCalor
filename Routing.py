@@ -1,7 +1,7 @@
 import flet as ft
 from SideMenu import SideMenu
 from Index import Index
-from Appbar import Appbar
+from AppBar import AppBar
 from Competencia import Competencia
 from Informe import Informe
 from Login import Login
@@ -38,7 +38,7 @@ class Router:
         
         self.menu = SideMenu(self)
         
-        self.bar = Appbar(self)
+        self.bar = AppBar(self)
         self.page.navigation_bar = self.bar.build()
         
         self.menu.visible = False

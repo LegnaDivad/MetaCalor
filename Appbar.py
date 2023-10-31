@@ -4,16 +4,17 @@ from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 
-class Appbar(ft.UserControl):
+
+class AppBar(ft.UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
-        
+
         self.verde = '#6A994E'
-        
+
         self.nickname = ft.Text()
-    
-        self.bar = ft.AppBar(
+
+        self.app_bar = ft.AppBar(
             # leading=ft.Icon(ft.icons.PALETTE),
             leading_width=40,
             toolbar_height=60,
@@ -27,24 +28,25 @@ class Appbar(ft.UserControl):
                     icon_size=40,
                 ),
                 ft.PopupMenuButton(
-                    content=ft.Icon(ft.icons.PERSON_ROUNDED,size=40),
+                    content=ft.Icon(ft.icons.PERSON_ROUNDED, size=40),
                     items=[
                         ft.PopupMenuItem(text="Perfil de Usuario"),
                         ft.PopupMenuItem(),  # divider
-                        ft.PopupMenuItem(text="Cerrar Sesión",on_click=self.cerrarSesion),
+                        ft.PopupMenuItem(text="Cerrar Sesión",
+                                         on_click=self.cerrar_sesion),
                     ]
                 ),
             ],
         )
-        
-    def cerrarSesion(self,e):
+
+    def cerrar_sesion(self, e): #Para que es la propiedad e?
         self.nickname.value = ''
         self.route.page.update()
         self.route.page.go('/')
-        
-    def set_Nickname(self,texto):
+
+    def set_nickname(self, texto):
         self.nickname.value = texto
         self.route.page.update()
-        
+
     def build(self):
-        return self.bar
+        return self.app_bar

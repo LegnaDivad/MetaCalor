@@ -4,18 +4,19 @@ from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 
+
 class Informe(ft.UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
-        
+
         self.index = ft.Container(
             expand=True,
-            content=ft.Text(value='Informe',color='black')
+            content=ft.Text(value='Informe', color='black')
         )
-        
+
     def build(self):
         return self.index
-    
+
     def inicializar(self):
         print('Inicializando Informe')

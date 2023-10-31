@@ -3,7 +3,7 @@ from flet import *
 from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
-from Database import UserDatabase
+from data_base import UserDatabase
 
 class Login(UserControl):
     def __init__(self, route):
@@ -12,7 +12,7 @@ class Login(UserControl):
         
         self.usuario = TextField(label='Usuario',icon=icons.PERSON_2_OUTLINED,width=450)
         self.contrasenia = TextField(label='Contraseña',icon=icons.LOCK_CLOCK_OUTLINED,width=450)
-        self.botonLogin = ElevatedButton(text='Iniciar Sesión',icon=icons.LOGIN,style=ButtonStyle(bgcolor='white'),on_click=self.login)
+        self.boton_login = ElevatedButton(text='Iniciar Sesión',icon=icons.LOGIN,style=ButtonStyle(bgcolor='white'),on_click=self.login)
         
         self.loginGUI = Container(
             expand=True,
@@ -28,7 +28,7 @@ class Login(UserControl):
                         Text('Iniciar Sesión'),
                         self.usuario,
                         self.contrasenia,
-                        self.botonLogin,
+                        self.boton_login,
                         TextButton(text='Registrate aquí',on_click=lambda _: self.page.go('/registro')),
                     ]
                 )
@@ -44,7 +44,7 @@ class Login(UserControl):
         datos = [self.usuario.value,self.contrasenia.value]
         mydb = UserDatabase(self.route)
         mydb.connect()
-        resultado = mydb.verificarLogin(datos)
+        resultado = mydb.verificar_login(datos)
         mydb.close()
         
         if resultado is None:

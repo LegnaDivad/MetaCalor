@@ -3,7 +3,7 @@ from flet import *
 from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
-from Database import UserDatabase
+from data_base import UserDatabase
 
 
 class Register(UserControl):
@@ -14,7 +14,7 @@ class Register(UserControl):
         self.nombre = TextField(label='Nombre',width=450)
         self.usuario = TextField(label='Usuario',width=450)
         self.contrasenia = TextField(label='Contraseña',width=450,password=True)
-        self.contraseniaRep = TextField(label='Repetir Contraseña',width=450,password=True)
+        self.contrasenia_rep = TextField(label='Repetir Contraseña',width=450,password=True)
         self.botonRegistro = ElevatedButton(text='Registrarse',icon=icons.APP_REGISTRATION,style=ButtonStyle(bgcolor='white'),on_click=self.registrarUsuario)    
         
         self.registroGUI = Container(
@@ -32,7 +32,7 @@ class Register(UserControl):
                         self.nombre,
                         self.usuario,
                         self.contrasenia,
-                        self.contraseniaRep,
+                        self.contrasenia_rep,
                         self.botonRegistro,
                         TextButton(text='Iniciar Sesión',on_click=lambda _: self.page.go('/')),
                     ]
@@ -44,7 +44,7 @@ class Register(UserControl):
         mydb = UserDatabase(self.route)
         mydb.connect()
         datos = [self.nombre.value, self.usuario.value, self.contrasenia.value]
-        resultado = mydb.registrarUsuario(datos)
+        resultado = mydb.registrar_usuario(datos)
         mydb.close()
         
         if resultado == 'introducido':
