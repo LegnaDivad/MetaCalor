@@ -3,7 +3,6 @@ import flet as ft
 from Routing import Router
 #from Appbar import Appbar
 
-
 def main(page: ft.Page):
     '''Mostrar pagina principal'''
     routing = Router(page)
