@@ -10,7 +10,7 @@ class SideMenu(ft.UserControl):
         self.route = route
         
         self.color = '#FFFCF2'
-        self.GRIS = '#252422'
+        self.GRIS = '#FFFFFF'
         
         self.rail = ft.NavigationRail(
         selected_index=0,
@@ -23,54 +23,19 @@ class SideMenu(ft.UserControl):
         bgcolor=self.GRIS,
         destinations=[
             ft.NavigationRailDestination(
-                icon=ft.icons.HOME_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.HOME),
-                label_content=ft.Text("Inicio"),
+                icon_content=ft.Icon(ft.icons.FOOD_BANK_OUTLINED,color='black'),
+                selected_icon_content=ft.Icon(ft.icons.FOOD_BANK),
+                label_content=ft.Text("Pagina Principal",color='black'),
             ),
             ft.NavigationRailDestination(
-                icon_content=ft.Icon(ft.icons.PRODUCTION_QUANTITY_LIMITS),
-                selected_icon_content=ft.Icon(ft.icons.PRODUCTION_QUANTITY_LIMITS),
-                label_content=ft.Text("Catalogo"),
+                icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS_OUTLINED,color='black'),
+                selected_icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS),
+                label_content=ft.Text("Informe",color='black'),
             ),
             ft.NavigationRailDestination(
-                icon=ft.icons.SETTINGS_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.SETTINGS),
-                label_content=ft.Text("Producto"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.CHECKLIST_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.CHECKLIST),
-                label_content=ft.Text("Citas"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.ADD_BUSINESS_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.ADD_BUSINESS),
-                label_content=ft.Text("Donaciones"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.PERSON_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.PERSON),
-                label_content=ft.Text("Perfil"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.NOTIFICATIONS_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.NOTIFICATIONS),
-                label_content=ft.Text("Notificaciones"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.SETTINGS_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.SETTINGS),
-                label_content=ft.Text("Ajustes"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.QUESTION_ANSWER_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.QUESTION_ANSWER),
-                label_content=ft.Text("Preguntas"),
-            ),
-            ft.NavigationRailDestination(
-                icon=ft.icons.LOGOUT_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.LOGOUT),
-                label_content=ft.Text("Salir"),
+                icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP,color='black'),
+                selected_icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP),
+                label_content=ft.Text("Competencia",color='black'),
             ),
         ], on_change=self.selectedIndex,
     )
@@ -79,24 +44,10 @@ class SideMenu(ft.UserControl):
         if e.control.selected_index == 0:
             self.page.go('/index')
         elif e.control.selected_index == 1:
-            self.page.go('/catalogo')
+            self.page.go('/informe')
         elif e.control.selected_index == 2:
-            self.page.go('/CRUDProducto')
-        # elif e.control.selected_index == 3:
-        #     self.page.go('/')
-        elif e.control.selected_index == 4:
-            self.page.go('/donacion')
-        elif e.control.selected_index == 5:
-            self.page.go('/profile')
-        # elif e.control.selected_index == 6:
-        #     self.page.go('/')
-        # elif e.control.selected_index == 7:
-        #     self.page.go('/')
-        # elif e.control.selected_index == 8:
-        #     self.page.go('/')
-        elif e.control.selected_index == 9:
-            self.route.setId(None)
-            self.page.go('/')
+            self.page.go('/competencia')
+
         
     def build(self):
         return self.rail
