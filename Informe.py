@@ -10,8 +10,7 @@ class Informe(ft.UserControl):
         self.route = route
         
         self.index = ft.Container(
-            expand=True,
-            content=ft.Text(value='Informe',color='black')
+            expand=True
         )
         
     def build(self):

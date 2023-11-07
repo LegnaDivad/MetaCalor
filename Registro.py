@@ -13,15 +13,20 @@ class Register(UserControl):
         
         self.nombre = TextField(label='Nombre',width=450)
         self.usuario = TextField(label='Usuario',width=450)
-        self.contrasenia = TextField(label='Contraseña',width=450,password=True)
-        self.contraseniaRep = TextField(label='Repetir Contraseña',width=450,password=True)
-        self.botonRegistro = ElevatedButton(text='Registrarse',icon=icons.APP_REGISTRATION,style=ButtonStyle(bgcolor='white'),on_click=self.registrarUsuario)    
+        self.contrasenia = TextField(label='Contraseña',width=450,password=True,can_reveal_password=True)
+        self.contraseniaRep = TextField(label='Repetir Contraseña',width=450,password=True,can_reveal_password=True)
+        self.botonRegistro = ElevatedButton(text='Registrarse',icon=icons.APP_REGISTRATION,style=ButtonStyle(bgcolor='white'),on_click=self.registrarUsuario)
+        self.peso = TextField(label='Peso',width=450)    
+        self.altura = TextField(label='Altura',width=450)
+        self.edad = TextField(label='Edad',width=450)
+        
+        self.TMB = None    
         
         self.registroGUI = Container(
             expand=True,
             alignment=alignment.center,
             content=Container(
-                height=500,width=700,
+                height=900,width=700,
                 border=border.all(1,'black'),
                 content=Column(
                     alignment=MainAxisAlignment.CENTER,
@@ -33,6 +38,9 @@ class Register(UserControl):
                         self.usuario,
                         self.contrasenia,
                         self.contraseniaRep,
+                        self.altura,
+                        self.peso,
+                        self.edad,
                         self.botonRegistro,
                         TextButton(text='Iniciar Sesión',on_click=lambda _: self.page.go('/')),
                     ]
@@ -40,10 +48,14 @@ class Register(UserControl):
             )
         )
         
+    def calcularTMB(self):
+        self.TMB = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
+        return self.TMB
+        
     def registrarUsuario(self,e):
         mydb = UserDatabase(self.route)
         mydb.connect()
-        datos = [self.nombre.value, self.usuario.value, self.contrasenia.value]
+        datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, self.calcularTMB()]
         resultado = mydb.registrarUsuario(datos)
         mydb.close()
         
