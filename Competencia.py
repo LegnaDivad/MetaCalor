@@ -11,7 +11,7 @@ class Competencia(ft.UserControl):
         
         self.index = ft.Container(
             expand=True,
-            content=ft.Text(value='Competencia',color='black')
+            content=ft.Text(value='Aquí se mostrará el ranking',color='black')
         )
         
     def build(self):

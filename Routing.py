@@ -6,6 +6,8 @@ from Competencia import Competencia
 from Informe import Informe
 from Login import Login
 from Registro import Register
+from RegistroGUI import RegistroGUI
+from Search import Search
 
 
 class Router:
@@ -17,6 +19,7 @@ class Router:
         self.informe = Informe(self)
         self.login = Login(self)
         self.registro = Register(self)
+        self.buscador = Search(self)
         
         self.routes = {
             '/' : self.login,
@@ -24,6 +27,7 @@ class Router:
             '/index' : self.index,
             '/informe' : self.informe,
             '/competencia' : self.competencia,
+            '/buscador' : self.buscador,
         }
         
         self.llamada = {
@@ -32,17 +36,19 @@ class Router:
             '/index' : self.index.inicializar,
             '/informe' : self.informe.inicializar,
             '/competencia' : self.competencia.inicializar,
+            '/buscador' : self.buscador.inicializar,
         }
         
-        self.container = ft.Container(expand=True,content=self.routes['/'])
+        self.container = ft.Container(expand=True,content=self.routes['/'],padding=10)
         
         self.menu = SideMenu(self)
         
         self.bar = Appbar(self)
-        self.page.navigation_bar = self.bar.build()
+        self.page.appbar = self.bar.build()
         
-        self.menu.visible = False
-        self.page.navigation_bar.visible = False
+        self.page.appbar.visible = False
+        
+        self.registroGUI = RegistroGUI(self,self,self)
         
         self.body = ft.Row(
             expand=True,
@@ -54,12 +60,6 @@ class Router:
         )
         
     def route_change(self,e):
-        if self.page.route != '/' and self.page.route != '/registro':
-            self.menu.visible = True
-            self.page.navigation_bar.visible = True
-        else:
-            self.menu.visible = False
-            self.page.navigation_bar.visible = False
         self.container.content = self.routes[e.route]
         self.page.update()
         

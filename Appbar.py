@@ -9,23 +9,29 @@ class Appbar(ft.UserControl):
         super().__init__()
         self.route = route
         
-        self.verde = '#6A994E'
+        self.GRIS = '#252422'
         
         self.nickname = ft.Text()
     
         self.bar = ft.AppBar(
             # leading=ft.Icon(ft.icons.PALETTE),
             leading_width=40,
-            toolbar_height=60,
-            title=ft.Text("MetaCalor"),
+            toolbar_height=80,
+            title=ft.Image(
+                src=f"/images/Logo3.PNG",
+                width=380,
+                height=85,
+                fit=ft.ImageFit.CONTAIN,
+            ),
             center_title=False,
-            bgcolor=self.verde,
+            bgcolor=self.GRIS,
             actions=[
                 self.nickname,
                 ft.IconButton(
                     icon=ft.icons.NOTIFICATIONS_OUTLINED,
                     icon_size=40,
                 ),
+                ft.Icon(),
                 ft.PopupMenuButton(
                     content=ft.Icon(ft.icons.PERSON_ROUNDED,size=40),
                     items=[
@@ -34,11 +40,16 @@ class Appbar(ft.UserControl):
                         ft.PopupMenuItem(text="Cerrar Sesión",on_click=self.cerrarSesion),
                     ]
                 ),
+                ft.Icon(),
+                ft.Icon(),
             ],
         )
         
     def cerrarSesion(self,e):
         self.nickname.value = ''
+        self.route.menu.cont.visible = False
+        self.route.page.appbar.visible = False
+        self.route.menu.update()
         self.route.page.update()
         self.route.page.go('/')
         

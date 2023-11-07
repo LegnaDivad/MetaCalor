@@ -12,42 +12,60 @@ class SideMenu(ft.UserControl):
         self.color = '#FFFCF2'
         self.GRIS = '#FFFFFF'
         
+        self.cont = ft.Container(            
+            padding=ft.padding.all(5),
+            #bgcolor=colors.ON_INVERSE_SURFACE,                       
+            border_radius=ft.border_radius.all(5),
+            visible=False,
+        )       
+        
         self.rail = ft.NavigationRail(
-        selected_index=0,
-        label_type=ft.NavigationRailLabelType.ALL,
-        # extended=True,
-        min_width=150,
-        min_extended_width=450,
-        # leading=ft.FloatingActionButton(icon=ft.icons.CREATE, text="Add"),
-        group_alignment=-0.9,
-        bgcolor=self.GRIS,
-        destinations=[
-            ft.NavigationRailDestination(
-                icon_content=ft.Icon(ft.icons.FOOD_BANK_OUTLINED,color='black'),
-                selected_icon_content=ft.Icon(ft.icons.FOOD_BANK),
-                label_content=ft.Text("Pagina Principal",color='black'),
-            ),
-            ft.NavigationRailDestination(
-                icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS_OUTLINED,color='black'),
-                selected_icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS),
-                label_content=ft.Text("Informe",color='black'),
-            ),
-            ft.NavigationRailDestination(
-                icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP,color='black'),
-                selected_icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP),
-                label_content=ft.Text("Competencia",color='black'),
-            ),
-        ], on_change=self.selectedIndex,
-    )
+            expand=True,
+            selected_index=0,
+            label_type=ft.NavigationRailLabelType.ALL,
+            # extended=True,
+            min_width=150,
+            min_extended_width=450,
+            # leading=ft.FloatingActionButton(icon=ft.icons.CREATE, text="Add"),
+            group_alignment=-0.9,
+            bgcolor=self.GRIS,
+            destinations=[
+                ft.NavigationRailDestination(
+                    icon_content=ft.Icon(ft.icons.FOOD_BANK_OUTLINED,color='black'),
+                    selected_icon_content=ft.Icon(ft.icons.FOOD_BANK),
+                    label_content=ft.Text("Pagina Principal",color='black'),
+                ),
+                ft.NavigationRailDestination(
+                    icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS_OUTLINED,color='black'),
+                    selected_icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS),
+                    label_content=ft.Text("Informe",color='black'),
+                ),
+                ft.NavigationRailDestination(
+                    icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP,color='black'),
+                    selected_icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP),
+                    label_content=ft.Text("Competencia",color='black'),
+                ),
+            ], on_change=self.selectedIndex,
+        )
+        self.cont.content = self.rail
         
     def selectedIndex(self,e):
         if e.control.selected_index == 0:
-            self.page.go('/index')
+            self.route.page.go('/index')
+            self.route.page.update()
+            self.update()
+            return
         elif e.control.selected_index == 1:
-            self.page.go('/informe')
+            self.route.page.go('/informe')
+            self.route.page.update()
+            self.update()
+            return
         elif e.control.selected_index == 2:
-            self.page.go('/competencia')
+            self.route.page.go('/competencia')
+            self.route.page.update()
+            self.update()
+            return
 
         
     def build(self):
-        return self.rail
+        return self.cont

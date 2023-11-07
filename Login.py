@@ -4,6 +4,7 @@ from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 from Database import UserDatabase
+from Notification import Notification
 
 class Login(UserControl):
     def __init__(self, route):
@@ -11,7 +12,7 @@ class Login(UserControl):
         self.route = route
         
         self.usuario = TextField(label='Usuario',icon=icons.PERSON_2_OUTLINED,width=450)
-        self.contrasenia = TextField(label='Contraseña',icon=icons.LOCK_CLOCK_OUTLINED,width=450)
+        self.contrasenia = TextField(label='Contraseña',icon=icons.LOCK_CLOCK_OUTLINED,width=450,password=True,can_reveal_password=True)
         self.botonLogin = ElevatedButton(text='Iniciar Sesión',icon=icons.LOGIN,style=ButtonStyle(bgcolor='white'),on_click=self.login)
         
         self.loginGUI = Container(
@@ -36,8 +37,12 @@ class Login(UserControl):
         )
         
     def IniciarIndex(self,resultado):
+        # self.route.page.bgcolor = 'blue'
+        self.route.menu.cont.visible = True
+        self.route.page.appbar.visible = True
         self.page.go('/index')
         self.route.bar.set_Nickname(resultado)
+        self.route.menu.update()
         self.route.page.update()
         
     def login(self,e):
@@ -48,7 +53,7 @@ class Login(UserControl):
         mydb.close()
         
         if resultado is None:
-            print('Usuario incorrecto')
+            Notification(self.page,'Usuario o contraseña incorrectos!','red').mostrar_msg()
             return
         else:
             self.IniciarIndex(resultado)
