@@ -4,12 +4,16 @@ from Appbar import Appbar
 
 
 def main(page: ft.Page):
-    routing = Router(page)
-
+    routing = Router(page) 
+    page.window_width = 900
+    page.window_height = 800
     page.padding = 0
-    page.bgcolor = "white"
+    page.bgcolor = "#4B9F8D"
     
-    page.theme = ft.Theme(
+
+    
+    
+    page.theme = ft.Theme(  
         scrollbar_theme=ft.ScrollbarTheme(
             main_axis_margin=10,
             thumb_color={
