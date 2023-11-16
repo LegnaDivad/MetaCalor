@@ -21,6 +21,8 @@ class Router:
         self.registro = Register(self)
         self.buscador = Search(self)
         
+        self.registroGUI = RegistroGUI(self,self,self)
+        
         self.routes = {
             '/' : self.login,
             '/registro' : self.registro,
@@ -45,10 +47,7 @@ class Router:
         
         self.bar = Appbar(self)
         self.page.appbar = self.bar.build()
-        
         self.page.appbar.visible = False
-        
-        self.registroGUI = RegistroGUI(self,self,self)
         
         self.body = ft.Row(
             expand=True,
