@@ -11,50 +11,39 @@ class Register(UserControl):
         super().__init__()
         self.route = route
         
-        self.nombre = TextField(label='Nombre',width=450,autofocus=True,bgcolor="#E3E9F0")
+        self.nombre = TextField(label='Nombre',width=450)
         self.usuario = TextField(label='Usuario',width=450)
         self.contrasenia = TextField(label='Contraseña',width=450,password=True,can_reveal_password=True)
         self.contraseniaRep = TextField(label='Repetir Contraseña',width=450,password=True,can_reveal_password=True)
         self.botonRegistro = ElevatedButton(text='Registrarse',icon=icons.APP_REGISTRATION,style=ButtonStyle(bgcolor='white'),on_click=self.registrarUsuario)
-        self.peso = TextField(label='Peso',width=130)    
-        self.altura = TextField(label='Altura',width=130)
-        self.edad = TextField(label='Edad',width=130)
+        self.peso = TextField(label='Peso',width=450)    
+        self.altura = TextField(label='Altura',width=450)
+        self.edad = TextField(label='Edad',width=450)
         
         self.TMB = None    
         
-        row = Row(
-            spacing=30
-            ,controls=[self.peso,self.altura,self.edad],
-            alignment = MainAxisAlignment.CENTER
-            )
         self.registroGUI = Container(
             expand=True,
             alignment=alignment.center,
-            
             content=Container(
-                bgcolor="white",
-                height=Page.window_max_height,width=500,
+                height=900,width=700,
                 border=border.all(1,'black'),
                 content=Column(
                     alignment=MainAxisAlignment.CENTER,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
-                    spacing=15,
-
-                    
+                    spacing=30,
                     controls=[
-                        Text('Registro de Usuario',font_family="Arial Black",size=30,color='#26587E'),
+                        Text('Registro de Usuario'),
                         self.nombre,
                         self.usuario,
                         self.contrasenia,
                         self.contraseniaRep,
-                        row,
-                        # self.edad,
-                        # self.altura,
-                        # self.peso,
+                        self.altura,
+                        self.peso,
+                        self.edad,
                         self.botonRegistro,
                         TextButton(text='Iniciar Sesión',on_click=lambda _: self.page.go('/')),
                     ]
-                    
                 )
             )
         )

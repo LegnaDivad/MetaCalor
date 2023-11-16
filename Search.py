@@ -11,6 +11,7 @@ class Search(ft.UserControl):
         super().__init__()
         self.route = route
         
+        
         self.SearchButtom = ft.ElevatedButton(text='Buscar',icon=ft.icons.SEARCH,on_click=self.buscarElementos)
         self.SearchText = ft.TextField(label='Nombre de Alimento',expand=True,color='black')
         
