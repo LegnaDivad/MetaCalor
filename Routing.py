@@ -1,14 +1,13 @@
 import flet as ft
 from SideMenu import SideMenu
-from Index import Index
+# from Index import Index
+from IndexNuevo import Index
 from Appbar import Appbar
 from Competencia import Competencia
 from Informe import Informe
 from Login import Login
 from Registro import Register
-from RegistroGUI import RegistroGUI
 from Search import Search
-
 
 class Router:
     def __init__(self,page: ft.Page):
@@ -21,7 +20,7 @@ class Router:
         self.registro = Register(self)
         self.buscador = Search(self)
         
-        self.registroGUI = RegistroGUI(self,self,self)
+        self.idLogin = None
         
         self.routes = {
             '/' : self.login,
@@ -41,14 +40,12 @@ class Router:
             '/buscador' : self.buscador.inicializar,
         }
         
-        self.container = ft.Container(expand=True,content=self.routes['/'],padding=10)
-        
         self.menu = SideMenu(self)
-        
         self.bar = Appbar(self)
         self.page.appbar = self.bar.build()
         self.page.appbar.visible = False
         
+        self.container = ft.Container(expand=True,content=self.routes['/'],padding=10)
         self.body = ft.Row(
             expand=True,
             controls=[
@@ -57,6 +54,15 @@ class Router:
                 self.container,
             ]
         )
+        
+    def setLogInfo(self,datos):
+        self.idLogin = datos[2]
+        
+    def getId(self):
+        return self.idLogin
+
+    def Logout(self):
+        self.idLogin = None
         
     def route_change(self,e):
         self.container.content = self.routes[e.route]
