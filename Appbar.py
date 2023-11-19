@@ -11,7 +11,7 @@ class Appbar(ft.UserControl):
         
         self.GRIS = '#252422'
         
-        self.nickname = ft.Text()
+        self.nickname = ft.Text(weight=ft.FontWeight.BOLD,color='black',text_align=ft.TextAlign.CENTER,expand=True)
     
         self.bar = ft.AppBar(
             # leading=ft.Icon(ft.icons.PALETTE),
@@ -26,19 +26,32 @@ class Appbar(ft.UserControl):
             center_title=False,
             bgcolor=self.GRIS,
             actions=[
-                self.nickname,
+                ft.Icon(),
                 ft.IconButton(
                     icon=ft.icons.NOTIFICATIONS_OUTLINED,
-                    icon_size=40,
+                    icon_size=33,icon_color='white'
                 ),
                 ft.Icon(),
-                ft.PopupMenuButton(
-                    content=ft.Icon(ft.icons.PERSON_ROUNDED,size=40),
-                    items=[
-                        ft.PopupMenuItem(text="Perfil de Usuario"),
-                        ft.PopupMenuItem(),  # divider
-                        ft.PopupMenuItem(text="Cerrar Sesión",on_click=self.cerrarSesion),
-                    ]
+                ft.Container(
+                    expand=True,border_radius=ft.border_radius.all(20),
+                    width=300,height=50,bgcolor='white',padding=5,
+                    content=ft.Row(
+                        expand=True,
+                        controls=[
+                            ft.Icon(),
+                            ft.Icon(name=ft.icons.TAG_FACES_OUTLINED,color='black'),
+                            self.nickname,
+                            ft.VerticalDivider(),
+                            ft.PopupMenuButton(
+                                content=ft.Icon(name=ft.icons.ARROW_DOWNWARD,color='black'),
+                                items=[
+                                    ft.PopupMenuItem(icon=ft.icons.PERSON,text="Perfil de Usuario"),
+                                    ft.PopupMenuItem(),  # divider
+                                    ft.PopupMenuItem(icon=ft.icons.LOGOUT,text="Cerrar Sesión",on_click=self.cerrarSesion),
+                                ]
+                            ),
+                        ]
+                    )
                 ),
                 ft.Icon(),
                 ft.Icon(),
@@ -51,6 +64,7 @@ class Appbar(ft.UserControl):
         self.route.page.appbar.visible = False
         self.route.menu.update()
         self.route.page.update()
+        self.route.Logout()
         self.route.page.go('/')
         
     def set_Nickname(self,texto):

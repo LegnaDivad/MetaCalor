@@ -5,19 +5,39 @@ from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 from Database import FoodDatabase
 from Notification import Notification
+from Cartas import CartaBuscador
+from AlertDialog import RegisterDialog
 
 class Search(ft.UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
         
+        self.focused_color = '#26587E'
+        self.GRIS = '#4D4D4D'
         
-        self.SearchButtom = ft.ElevatedButton(text='Buscar',icon=ft.icons.SEARCH,on_click=self.buscarElementos)
-        self.SearchText = ft.TextField(label='Nombre de Alimento',expand=True,color='black')
-        
-        self.SearchList = ft.ListView(
-            expand=1,padding=20,auto_scroll=True,
+        self.SearchButtom = ft.ElevatedButton(
+            text='Buscar',
+            icon=ft.icons.SEARCH,
+            on_click=self.buscarElementos,
+            style=ft.ButtonStyle(
+                color="#26587E",
+                bgcolor="#E3E9F0"
+            )
         )
+        
+        self.SearchText = ft.TextField(
+            label='Nombre de Alimento',
+            autofocus=True,
+            focused_color=self.focused_color,
+            text_style=ft.TextStyle(color=self.GRIS),
+            focused_border_color=self.GRIS,
+            label_style=ft.TextStyle(color=self.GRIS),
+            expand=True,
+            color='black'
+        )
+        
+        self.SearchList = ft.ListView(expand=1,padding=20,auto_scroll=True,)
         
         self.buscadorGUI = ft.Column(
             expand=True,
@@ -33,11 +53,15 @@ class Search(ft.UserControl):
                     )
                 ),
                 ft.Container(
-                    expand=True,border=ft.border.all(width=1,color='black'),
+                    expand=True,
                     content=self.SearchList
                 )
             ]
         )
+        
+    def establecer_Horario(self,string):
+        self.horario = string
+        print(self.horario)
         
     def buscarElementos(self,e):
         self.SearchList.clean()
@@ -52,34 +76,15 @@ class Search(ft.UserControl):
         mydb.close()
         
         for datos in resultado:
-            item = ft.Container(
-                expand=True,height=80,margin=8,border=ft.border.all(width=1,color='black'),
-                content=ft.Row(
-                    expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        ft.Row(
-                            controls=[
-                                ft.Icon(),
-                                ft.Text(value=f'Alimento: {datos[0]} | Categoria: {datos[1]}',text_align='center',color='black'),
-                            ]
-                        ),
-                        ft.Row(
-                            controls=[
-                            ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30),
-                            ft.Icon(),
-                            ]
-                        ),
-                    ]
-                )
-            )
+            item = CartaBuscador(self.route,datos)
             self.SearchList.controls.append(item)
-            
         self.SearchList.update()
         
     def build(self):
         return self.buscadorGUI
     
     def inicializar(self):
+        self.route.page.bgcolor = '#F2E8CF'
         self.SearchText.value = None
         self.SearchText.update()
         self.SearchList.clean()
