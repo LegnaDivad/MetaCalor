@@ -76,7 +76,21 @@ class Register(UserControl):
             return
 
         calculoTMB = self.calcularTMB()
-        datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+        if(self.nombre.value.isalpha() == False):
+            Notification(self.page,'El nombre no puede contener números!','red').mostrar_msg()
+            return
+        elif(self.usuario.value.isalnum() == False):
+            Notification(self.page,'El usuario no puede contener caracteres especiales!','red').mostrar_msg()
+            return
+        elif(altura < 0 or peso < 0 or edad < 0):
+            Notification(self.page,'No puede haber valores negativos!','red').mostrar_msg()
+            return
+        elif(self.altura.value == '' or self.peso.value == '' or self.edad.value == ''):
+            Notification(self.page,'No puede haber valores vacios!','red').mostrar_msg()
+            return
+        
+        else:
+            datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
         
         if self.contrasenia.value != self.contraseniaRep.value:
             Notification(self.page,'Las contraseñas no coinciden!','red').mostrar_msg()
