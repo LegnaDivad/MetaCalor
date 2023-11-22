@@ -3,6 +3,8 @@ import flet as ft
 from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
+from apscheduler.schedulers.blocking import BlockingScheduler
+import datetime
 
 class Appbar(ft.UserControl):
     def __init__(self, route):
@@ -12,6 +14,12 @@ class Appbar(ft.UserControl):
         self.GRIS = '#252422'
         
         self.nickname = ft.Text(weight=ft.FontWeight.BOLD,color='black',text_align=ft.TextAlign.CENTER,expand=True)
+
+        self.scheduler = BlockingScheduler()
+        self.scheduler.add_job(self.update_day, 'interval', seconds=1)
+        
+        self.hour_text = ft.Text('', size=15, weight=ft.FontWeight.W_600,color='white')
+        self.day_text = ft.Text(size=20,weight=ft.FontWeight.W_600,color='white')
     
         self.bar = ft.AppBar(
             # leading=ft.Icon(ft.icons.PALETTE),
@@ -26,6 +34,9 @@ class Appbar(ft.UserControl):
             center_title=False,
             bgcolor=self.GRIS,
             actions=[
+                # ft.Icon(),
+                self.day_text,
+                self.hour_text,
                 ft.Icon(),
                 ft.IconButton(
                     icon=ft.icons.NOTIFICATIONS_OUTLINED,
@@ -70,6 +81,13 @@ class Appbar(ft.UserControl):
     def set_Nickname(self,texto):
         self.nickname.value = texto
         self.route.page.update()
+        
+    def update_day(self):
+        hora = datetime.datetime.now()
+        hora_formatada = hora.strftime("%H:%M:%S")
+        self.hour_text.value = f'{hora_formatada}'
+        self.day_text.update()
+        self.hour_text.update()
         
     def build(self):
         return self.bar
