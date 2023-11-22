@@ -22,26 +22,28 @@ class Appbar(ft.UserControl):
                 width=380,
                 height=85,
                 fit=ft.ImageFit.CONTAIN,
+                
             ),
             center_title=False,
             bgcolor=self.GRIS,
+            #Icono notificaciones
             actions=[
                 ft.Icon(),
                 ft.IconButton(
                     icon=ft.icons.NOTIFICATIONS_OUTLINED,
-                    icon_size=33,icon_color='white'
+                    icon_size=35,icon_color='white'
                 ),
-                ft.Icon(),
+           ft.Icon(size=5),
+                #Etiqueta con nombre de usuario
                 ft.Container(
                     expand=True,border_radius=ft.border_radius.all(20),
-                    width=300,height=50,bgcolor='white',padding=5,
+                    width=400,height=50,bgcolor='white',padding=5,
                     content=ft.Row(
                         expand=True,
                         controls=[
-                            ft.Icon(),
-                            ft.Icon(name=ft.icons.TAG_FACES_OUTLINED,color='black'),
+                            ft.Icon(name=ft.icons.TAG_FACES_OUTLINED,color='black',size=35),
                             self.nickname,
-                            ft.VerticalDivider(),
+                            ft.VerticalDivider(thickness=1,color='black',width=1),
                             ft.PopupMenuButton(
                                 content=ft.Icon(name=ft.icons.ARROW_DOWNWARD,color='black'),
                                 items=[
@@ -53,7 +55,6 @@ class Appbar(ft.UserControl):
                         ]
                     )
                 ),
-                ft.Icon(),
                 ft.Icon(),
             ],
         )
