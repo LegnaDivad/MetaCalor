@@ -55,7 +55,7 @@ class UserDatabase(Config):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
         cursor.execute(use)
-        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario 
+        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos 
         FROM Registro_Alimentos AS RA
         JOIN Alimentos AS A ON A.ID_Alimento = RA.ID_Alimento
         WHERE RA.ID_Usuario = %s'''
@@ -77,8 +77,8 @@ class FoodDatabase(Config):
     
     def registrarAlimentoDia(self,datos):
         use = 'USE metaclr'
-        camposTabla = ('ID_Usuario,ID_Alimento,Fecha_registro,Total_calorias,horario')
-        qntd = ('%s, %s, %s, %s, %s')
+        camposTabla = ('ID_Usuario,ID_Alimento,Fecha_registro,Total_calorias,Total_lipidos,Total_hidratos,Total_proteinas,horario')
+        qntd = ('%s, %s, %s, %s, %s, %s, %s, %s')
         sql = f'INSERT INTO Registro_Alimentos({camposTabla}) VALUES ({qntd})'
         cursor = self.connection.cursor()
         cursor.execute(use)
