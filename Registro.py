@@ -21,15 +21,26 @@ class Register(UserControl):
         self.contrasenia = TextField(label='Contraseña',width=450,focused_color=self.focused_color,password=True,can_reveal_password=True,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.contraseniaRep = TextField(label='Repetir Contraseña',focused_color=self.focused_color,width=450,password=True,can_reveal_password=True,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.botonRegistro = ElevatedButton(text='Registrarse',icon=icons.APP_REGISTRATION,style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.registrarUsuario)
-        self.peso = TextField(label='Peso',focused_color=self.focused_color,width=130,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))    
-        self.altura = TextField(label='Altura',focused_color=self.focused_color,width=130,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
-        self.edad = TextField(label='Edad',focused_color=self.focused_color,width=130,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
-        
+        self.peso = TextField(label='Peso kg.',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))    
+        self.altura = TextField(label='Altura cm.',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
+        self.edad = TextField(label='Edad',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
+        self.genero = PopupMenuButton(
+                    content= Icon(name=icons.TRANSGENDER,color='black'),
+                                items=[
+                                PopupMenuItem(icon=icons.MALE,text="Hombre",on_click=self.Hombre),
+                                PopupMenuItem(),  # divider
+                                PopupMenuItem(icon=icons.FEMALE,text="Mujer",on_click=self.Mujer),        
+                                ]
+                        
+        )
+
+       
+
         self.TMB = None    
         
         row = Row(
-            spacing=30
-            ,controls=[self.peso,self.altura,self.edad],
+            spacing=21
+            ,controls=[self.peso,self.altura,self.edad,self.genero],
             alignment = MainAxisAlignment.CENTER
             )
         self.registroGUI = Container(
@@ -52,6 +63,7 @@ class Register(UserControl):
                         self.contrasenia,
                         self.contraseniaRep,
                         row,
+                        #self.genero,
                         self.botonRegistro,
                         TextButton(text='Iniciar Sesión',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go('/')),
                     ]
@@ -59,6 +71,13 @@ class Register(UserControl):
                 )
             )
         )
+
+    def Hombre(self,e):
+            self.genero = 1
+            return self.genero
+    def Mujer(self,e):
+            self.genero = 2
+            return self.genero
         
     def calcularTMB(self):
         self.TMB = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
@@ -71,12 +90,43 @@ class Register(UserControl):
             edad = int(self.edad.value)
             altura = float(self.altura.value)
             peso = float(self.peso.value)
+            nombre = "".join(self.nombre.value.split(" "))
+            genero = self.genero
         except ValueError:
             Notification(self.page, 'Has dejado valores vacios o son inválidos!', 'red').mostrar_msg()
             return
 
         calculoTMB = self.calcularTMB()
-        datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+
+        if(nombre.isalpha() == False):
+            Notification(self.page,'El nombre no puede contener números!','red').mostrar_msg()
+            return
+        elif(self.usuario.value.isalnum() == False):
+            Notification(self.page,'El usuario no puede contener caracteres especiales!','red').mostrar_msg()
+            return
+        elif(altura < 0 or peso < 0 or edad < 0):
+            Notification(self.page,'No puede haber valores negativos!','red').mostrar_msg()
+            return
+        elif(self.altura.value == '' or self.peso.value == '' or self.edad.value == ''):
+            Notification(self.page,'No puede haber valores vacios!','red').mostrar_msg()
+            return
+        elif(edad < 15):
+            Notification(self.page,f'Estas seguro de que esta es tu edad? -> {edad}\nPara utilizar el programa debes ser mayor de 15 años','yellow').mostrar_msg()
+            return
+        elif(edad > 122):
+            Notification(self.page,f'Estas seguro de que esta es tu edad? -> {edad}\nSi es así llama a los record Guinness para declarar un nuevo record antes de usar nuestro programa!!!','yellow').mostrar_msg()
+            return
+        elif(peso > 595):
+            Notification(self.page,f'Estas seguro de que este es tu peso??!! -> {edad}\nSi es así llama a los record Guinness para declarar un nuevo record antes de usar nuestro programa!!!\nSi es que estas vivo para ese momento...','yellow').mostrar_msg()
+            return
+        elif(genero == None):
+            Notification(self.page,'No has seleccionado un genero!','red').mostrar_msg()
+            return
+        else:
+            datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+
+        #datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+
         
         if self.contrasenia.value != self.contraseniaRep.value:
             Notification(self.page,'Las contraseñas no coinciden!','red').mostrar_msg()
@@ -91,6 +141,7 @@ class Register(UserControl):
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
         Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
+        print(genero)
         self.route.page.go('/')
             
     def build(self):
@@ -104,5 +155,6 @@ class Register(UserControl):
         self.peso.value = None
         self.altura.value = None
         self.edad.value = None
+        self.genero = None
         self.registroGUI.update()
         print('Inicializando Registro')

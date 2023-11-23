@@ -11,7 +11,7 @@ import decimal
 
 
 class CartaRegistroAlimento(ft.UserControl):
-    def __init__(self, route,datos):
+    def __init__(self, route, datos):
         super().__init__()
         self.route = route
         self.datos = datos
@@ -61,7 +61,7 @@ class CartaRegistroAlimento(ft.UserControl):
 
 
 class CartaBuscador(ft.UserControl):
-    def __init__(self, route,datos):
+    def __init__(self, route, datos):
         super().__init__()
         self.route = route
         self.dato = datos
@@ -172,7 +172,11 @@ class CartaBuscador(ft.UserControl):
         id = self.route.getId()
         fecha = datetime.now()
         horario = self.route.buscador.horario
+
+        #datos = [id, self.dato[9], fecha, self.kcal.value, horario]
+
         datos = [id, self.dato[9], fecha, self.kcal.value,self.lipidos.value,self.hidratos.value,self.proteina.value,horario]
+
         
         mydb = FoodDatabase(self.route)
         mydb.connect()

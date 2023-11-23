@@ -13,6 +13,7 @@ class Notification(ft.UserControl):
         
         self.content = ft.Text(value=msg,color=color,style=ft.TextThemeStyle.BODY_LARGE)
         self.snack_bar = ft.SnackBar(
+            bgcolor="#677C77",
             content=self.content,
             elevation=10,
             duration=6000,
