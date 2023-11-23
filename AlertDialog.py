@@ -38,7 +38,7 @@ class RegisterDialog(ft.AlertDialog):
         self.content=contenido
         self.actions=[
             ft.TextButton(content=ft.Text("Cancelar", color="red"), on_click=self.canceled),
-            ft.TextButton(content=ft.Text("Agregar", color="Green"), on_click=self.confirmed),
+            ft.TextButton(content=ft.Text("Añadir", color="Green"), on_click=self.confirmed),
         ]
         self.actions_alignment=ft.MainAxisAlignment.END
         self.shape=ft.RoundedRectangleBorder(radius=10)

@@ -37,6 +37,7 @@ class Search(ft.UserControl):
             color='black'
         )
         
+
         self.recomendaciones = ft.Text(
                            "Recomendaciones: ", 
                            ft.TextStyle(italic=True, color=ft.colors.WHITE))
@@ -51,7 +52,10 @@ class Search(ft.UserControl):
             )
         )
         
-        self.SearchList = ft.ListView(expand=1,padding=20,auto_scroll=True,)
+        #self.SearchList = ft.ListView(expand=1,padding=20,auto_scroll=True,)
+
+        self.SearchList = ft.ListView(expand=1,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
+
         
         self.buscadorGUI = ft.Column(
             expand=True,
