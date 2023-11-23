@@ -97,6 +97,7 @@ class Register(UserControl):
             return
 
         calculoTMB = self.calcularTMB()
+
         if(nombre.isalpha() == False):
             Notification(self.page,'El nombre no puede contener números!','red').mostrar_msg()
             return
@@ -123,6 +124,9 @@ class Register(UserControl):
             return
         else:
             datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+
+        #datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+
         
         if self.contrasenia.value != self.contraseniaRep.value:
             Notification(self.page,'Las contraseñas no coinciden!','red').mostrar_msg()

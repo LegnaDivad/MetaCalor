@@ -25,8 +25,9 @@ class CartaRegistroAlimento(ft.UserControl):
         self.calorias = ft.Text(value=f"Calorías: {datos[1]}")
         
         self.carta = ft.Card(
+
             content=ft.Container(
-                padding=10,
+                padding=10,height=100,
                 content=ft.Row(
                     controls=[
                         ft.Container(
@@ -171,7 +172,11 @@ class CartaBuscador(ft.UserControl):
         id = self.route.getId()
         fecha = datetime.now()
         horario = self.route.buscador.horario
-        datos = [id, self.dato[9], fecha, self.kcal.value, horario]
+
+        #datos = [id, self.dato[9], fecha, self.kcal.value, horario]
+
+        datos = [id, self.dato[9], fecha, self.kcal.value,self.lipidos.value,self.hidratos.value,self.proteina.value,horario]
+
         
         mydb = FoodDatabase(self.route)
         mydb.connect()
