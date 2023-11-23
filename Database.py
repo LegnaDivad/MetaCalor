@@ -86,3 +86,58 @@ class FoodDatabase(Config):
         self.connection.commit()
         # return 'introducido'
         return not None
+        
+class generalDatabaseAccess(Config):
+    def __init__(self,route) -> None:
+        super().__init__()
+        self.route = route
+    
+    #el ultimo parametro es la cantidad de datos que queremos recuperar
+    def recuperarRegistro(self, campos_select, tabla_from, condiciones_where, cantidad=0):
+        try:
+            with self.connection.cursor() as cursor:
+                consulta = f"SELECT {campos_select} FROM {tabla_from} WHERE {condiciones_where}"
+                cursor.execute(consulta)
+        
+                if cantidad == 0:
+                    return cursor.fetchall()
+                else:
+                    resultados = [cursor.fetchone() for _ in range(cantidad)]
+                    return resultados
+
+        except Exception as e:
+            print(f"Error al recuperar registros: {e}")
+        return None
+    
+    def insertarRegistro(self, tabla_from, valores_insertados, condiciones_where):
+        try:
+            with self.connection.cursor() as cursor:
+                consulta = f"INSERT INTO {tabla_from} {valores_insertados} VALUES {condiciones_where}"
+                cursor.execute(consulta)
+
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            print(f"Error al insertar registro/s: {e}")
+    
+    def modificarRegistro(self, tabla_from, sentencia_set, condiciones_where):
+        try:
+            with self.connection.cursor() as cursor:
+                consulta = f"UPDATE {tabla_from} SET {sentencia_set} WHERE {condiciones_where} "
+                cursor.execute(consulta)
+
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            print(f"Error al modificar registro: {e}")
+    
+    def eliminarRegistro(self, tabla_from, condiciones_where, cantidad=0):
+        try:
+            with self.connection.cursor() as cursor:
+                consulta = f"DELETE FROM {tabla_from} WHERE {condiciones_where} "
+                cursor.execute(consulta)
+
+                self.connection.commit()
+        except Exception as e:
+            self.connection.rollback()
+            print(f"Error al recuperar registros: {e}")
