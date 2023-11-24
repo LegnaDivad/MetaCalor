@@ -95,12 +95,11 @@ class Register(UserControl):
             altura = float(self.altura.value)
             peso = float(self.peso.value)
             nombre = "".join(self.nombre.value.split(" "))
-            genero = self.genero.value
         except ValueError:
             Notification(self.page, 'Has dejado valores vacios o son inválidos!', 'red').mostrar_msg()
             return
 
-        calculoTMB = self.calcularTMB(genero)
+        calculoTMB = self.calcularTMB(self.genero.value)
 
         if(nombre.isalpha() == False):
             Notification(self.page,'El nombre no puede contener números!','red').mostrar_msg()
@@ -123,14 +122,11 @@ class Register(UserControl):
         elif(peso > 595):
             Notification(self.page,f'Estas seguro de que este es tu peso??!! -> {edad}\nSi es así llama a los record Guinness para declarar un nuevo record antes de usar nuestro programa!!!\nSi es que estas vivo para ese momento...','yellow').mostrar_msg()
             return
-        elif(genero == None):
+        elif(self.genero.value == None):
             Notification(self.page,'No has seleccionado un genero!','red').mostrar_msg()
             return
         else:
-            datos = [self.nombre.value, self.usuario.value, genero, peso, self.contrasenia.value, calculoTMB]
-
-        #datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
-
+            datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB,self.edad.value,self.altura.value,self.peso.value,self.genero.value]
         
         if self.contrasenia.value != self.contraseniaRep.value:
             Notification(self.page,'Las contraseñas no coinciden!','red').mostrar_msg()
@@ -145,7 +141,6 @@ class Register(UserControl):
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
         Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
-
         self.route.page.go('/')
             
     def build(self):
@@ -159,6 +154,6 @@ class Register(UserControl):
         self.peso.value = None
         self.altura.value = None
         self.edad.value = None
-        self.genero = None
+        # self.genero = None
         self.registroGUI.update()
         print('Inicializando Registro')

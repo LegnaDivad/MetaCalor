@@ -5,7 +5,7 @@ from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 from Notification import Notification
 from AlertDialog import *
-from Database import FoodDatabase
+from Database import FoodDatabase, UserDatabase
 import datetime
 import decimal
 
@@ -19,7 +19,7 @@ class CartaRegistroAlimento(ft.UserControl):
         self.GRIS = '#252422'
         
         self.botonModificar = ft.IconButton(icon=ft.icons.EDIT,icon_color='blue')
-        self.botonEliminar = ft.IconButton(icon=ft.icons.DELETE_OUTLINE,icon_color='red')
+        self.botonEliminar = ft.IconButton(icon=ft.icons.DELETE_OUTLINE,icon_color='red',on_click=self.eliminarAlimento)
         
         self.nombre = ft.Text(value=f"Nombre: {datos[0]}")
         self.calorias = ft.Text(value=f"Calorías: {datos[1]}")
@@ -56,9 +56,17 @@ class CartaRegistroAlimento(ft.UserControl):
             color=self.GRIS
         )
         
+    def eliminarAlimento(self,e):
+        mydb = UserDatabase(self.route)
+        mydb.connect()
+        # resultado = mydb.ObtenerRegistros(self.datos[7])
+        mydb.eliminarRegistroAlimento(self.datos[7])
+        mydb.close()
+        self.route.index.agregarComidas()
+        self.route.page.update()
+        
     def build(self):
         return self.carta
-
 
 class CartaBuscador(ft.UserControl):
     def __init__(self, route, datos):
@@ -74,9 +82,9 @@ class CartaBuscador(ft.UserControl):
         self.proteina = ft.Text(color='white',value=0)
         self.lipidos = ft.Text(color='white',value=0)
         self.hidratos = ft.Text(color='white',value=0)
-        self.unidad = ft.Text(value=f'Unidad: {datos[2]}\n',color='white')
+        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='white')
         
-        self.cantidadDato = ft.TextField(value=0,label='Cantidad - Presiona Enter para confirmar',on_submit=self.calcular_nutrientes)
+        self.cantidadDato = ft.TextField(value=0,label='Cantidad',on_submit=self.calcular_nutrientes)
         self.content = ft.Container(
             content=ft.Column(
                 controls=[

@@ -1,12 +1,31 @@
-from datetime import datetime, timedelta
+import datetime
+import flet as ft
 
-# Obtener la fecha y hora actual
-hoy = datetime.now()
+def main(page: ft.Page):
+    def change_time(e):
+        print(f"Time picker changed, value (minute) is {time_picker.value.minute}")
 
-# Bucle para retroceder hasta encontrar el día lunes
-while hoy.strftime('%A') != 'Monday':
-    hoy -= timedelta(days=1)  # Restar un día
-    # Puedes agregar una condición para evitar que retroceda indefinidamente si lo deseas
+    def dismissed(e):
+        print(f"Time picker dismissed, value is {time_picker.value}")
 
-# Imprimir la fecha del último lunes
-print("El último lunes fue:", hoy.strftime('%Y-%m-%d'))
+    time_picker = ft.TimePicker(
+        confirm_text="Confirm",
+        error_invalid_text="Time out of range",
+        help_text="Pick your time slot",
+        on_change=change_time,
+        on_dismiss=dismissed,
+        time_picker_entry_mode=ft.TimePickerEntryMode.INPUT_ONLY
+    )
+
+    page.overlay.append(time_picker)
+
+    date_button = ft.ElevatedButton(
+        "Pick time",
+        icon=ft.icons.TIME_TO_LEAVE,
+        on_click=lambda _: time_picker.pick_time(),
+    )
+
+    page.add(date_button)
+
+
+ft.app(target=main)
