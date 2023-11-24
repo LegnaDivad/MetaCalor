@@ -11,6 +11,7 @@ def main(page: ft.Page):
     page.padding = 0
     page.window_title = "Meta Calor"
     page.icon = "assets/Logo3.png"
+    page.fulscreen = True
     page.theme = ft.Theme(  
         scrollbar_theme=ft.ScrollbarTheme(
             main_axis_margin=10,
