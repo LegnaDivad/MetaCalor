@@ -45,6 +45,7 @@ class Index(ft.UserControl):
         self.desayuno = ft.Card(
             expand=True,
             content=ft.Column(
+                height=480,
                 expand=True,horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
                     ft.Container(
@@ -94,6 +95,7 @@ class Index(ft.UserControl):
         self.almuerzo = ft.Card(
             expand=True,
             content=ft.Column(
+                height=480,
                 expand=True,horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
                     ft.Container(
@@ -140,6 +142,7 @@ class Index(ft.UserControl):
         self.cena = ft.Card(
             expand=True,
             content=ft.Column(
+                height=480,
                 expand=True,horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
                     ft.Container(
