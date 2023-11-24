@@ -28,8 +28,8 @@ class UserDatabase(Config):
         
     def registrarUsuario(self,datos):
         use = 'USE metaclr'
-        camposTabla = ('Nombre,nickname,contrasenia,TMB')
-        qntd = ('%s, %s, %s, %s')
+        camposTabla = ('Nombre,nickname,contrasenia,TMB,Edad,Altura,Peso,Sexo')
+        qntd = ('%s, %s, %s, %s, %s, %s, %s, %s')
         sql = f'INSERT INTO Usuario({camposTabla}) VALUES ({qntd})'
         cursor = self.connection.cursor()
         cursor.execute(use)
@@ -52,11 +52,21 @@ class UserDatabase(Config):
         else:
             return None
         
+    def obtenerTMB(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT TMB
+        FROM Usuario
+        WHERE ID_Usuario = %s'''
+        cursor.execute(sql, (id,))
+        return cursor.fetchone()
+        
     def ObtenerRegistros(self,id):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
         cursor.execute(use)
-        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos,RA.Fecha_Registro
+        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos,RA.Fecha_Registro,RA.ID_RegistroAlimento
         FROM Registro_Alimentos AS RA
         JOIN Alimentos AS A ON A.ID_Alimento = RA.ID_Alimento
         WHERE RA.ID_Usuario = %s ORDER BY RA.Fecha_Registro DESC'''
@@ -69,12 +79,23 @@ class UserDatabase(Config):
         cursor.execute(use)
         fecha_formateada = fecha.strftime('%Y-%m-%d')
         sql = '''
-        SELECT Total_Calorias
+        SELECT Total_Calorias, Total_lipidos, Total_Proteinas, Total_hidratos
         FROM Registro_Alimentos
         WHERE Fecha_Registro BETWEEN STR_TO_DATE(%s, '%Y-%m-%d') - INTERVAL ((DAYOFWEEK(STR_TO_DATE(%s, '%Y-%m-%d')) + 5) % 7) DAY AND STR_TO_DATE(%s, '%Y-%m-%d') AND ID_Usuario = %s
         '''
         cursor.execute(sql, (fecha_formateada,fecha_formateada,fecha_formateada,id,))
         return cursor.fetchall()
+    
+    def eliminarRegistroAlimento(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''DELETE FROM Registro_Alimentos
+        WHERE ID_RegistroAlimento = %s
+        '''
+        cursor.execute(sql,(id,))
+        self.connection.commit()
+        return 'Eliminado'
         
 class FoodDatabase(Config):
     def __init__(self,route) -> None:

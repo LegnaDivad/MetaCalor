@@ -18,7 +18,7 @@ class Index(ft.UserControl):
         self.lvAlmuerzo = ft.ListView(expand=True,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
         self.lvCena = ft.ListView(expand=True,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
         
-        self.calRestantes = ft.Text('Calorías restantes: 1000',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
+        self.calRestantes = ft.Text(weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
         self.calConsumidas = ft.Text(value='Calorías consumidas: 0',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
         self.lipidos = ft.Text(value='Lipidos: 0%',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
         self.proteinas = ft.Text(value='Proteinas: 0%',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
@@ -223,7 +223,11 @@ class Index(ft.UserControl):
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
                                         ft.ElevatedButton(text='Añadir Recordatorio',icon=ft.icons.ACCESS_ALARM,style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.boton_agregar),
-                                        ft.ElevatedButton(text='Modificar Dia',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia)
+                                        ft.Row([
+                                            ft.ElevatedButton(text='Retrasar dia',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia2),
+                                            ft.ElevatedButton(text='Adelantar',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia),
+                                        ])
+                                        
                                     ]
                                 ),
                             ]
@@ -247,6 +251,18 @@ class Index(ft.UserControl):
 
         # Sumar un día a la fecha actual
         fecha_siguiente = fecha_actual_dt + datetime.timedelta(days=1)
+
+        # Convertir la fecha resultante de nuevo a una cadena si es necesario
+        self.fechaActual = fecha_siguiente.strftime(f"%Y-%m-%d")
+        print(self.fechaActual)
+        self.inicializar()
+        
+    def modDia2(self,e):
+        # Convertir la cadena a un objeto datetime
+        fecha_actual_dt = datetime.datetime.strptime(self.fechaActual, f"%Y-%m-%d")
+
+        # Sumar un día a la fecha actual
+        fecha_siguiente = fecha_actual_dt - datetime.timedelta(days=1)
 
         # Convertir la fecha resultante de nuevo a una cadena si es necesario
         self.fechaActual = fecha_siguiente.strftime(f"%Y-%m-%d")
@@ -279,6 +295,7 @@ class Index(ft.UserControl):
         mydb = UserDatabase(self.route)
         mydb.connect()
         resultado = mydb.ObtenerRegistros(self.route.getId())
+        tmb = mydb.obtenerTMB(self.route.getId())
         mydb.close()
         
         for data in resultado:
@@ -298,11 +315,23 @@ class Index(ft.UserControl):
                 sumaLipidos += data[4]
                 sumaCarbohidratos += data[5]
         total = sumaProteinas + sumaLipidos + sumaCarbohidratos
-        if total > 0:
-            self.calConsumidas.value = f'Calorías consumidas: {sumaKcal}'
+        if total > 0 and sumaKcal: #sumaKcal aquí no es necesario
+            self.calConsumidas.value = f'Calorías consumidas: {round(sumaKcal,2)}'
             self.proteinas.value = f'Proteinas: {round((sumaProteinas / total) * 100, 2)}%'
             self.lipidos.value = f'Lipidos: {round((sumaLipidos / total) * 100, 2)}%'
             self.carbohidratos.value = f'Cabrohidratos:: {round((sumaCarbohidratos / total) * 100, 2)}%'
+        #Esto no es necesario, solamente es para las pruebas
+        else:
+            self.calConsumidas.value = f'Calorías consumidas: 0'
+            self.proteinas.value = f'Proteinas: 0%'
+            self.lipidos.value = f'Lipidos: 0%'
+            self.carbohidratos.value = f'Cabrohidratos:: 0%'
+        string = round(float(tmb[0]) - sumaKcal,2)
+        self.calRestantes.value = f'Calorías restantes: {string}'
+        if string < 0 :
+            self.calRestantes.color = 'red'
+        elif string > 0 :
+            self.calRestantes.color = self.GRIS
         self.cont.update()
         
     def build(self):
