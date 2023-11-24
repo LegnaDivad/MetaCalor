@@ -89,5 +89,4 @@ class Login(UserControl):
         self.usuario.value = None
         self.contrasenia.value = None
         self.loginGUI.update()
-        self.route.page.bgcolor = "#BC4749"
         print('Inicializando Login')

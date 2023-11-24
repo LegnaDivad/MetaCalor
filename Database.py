@@ -1,4 +1,5 @@
 import mysql.connector
+from datetime import datetime
 
 class Config:
     # def connect(self):
@@ -27,8 +28,8 @@ class UserDatabase(Config):
         
     def registrarUsuario(self,datos):
         use = 'USE metaclr'
-        camposTabla = ('Nombre,nickname,Sexo,Peso,contrasenia,TMB')
-        qntd = ('%s, %s, %s, %s, %s, %s')
+        camposTabla = ('Nombre,nickname,contrasenia,TMB')
+        qntd = ('%s, %s, %s, %s')
         sql = f'INSERT INTO Usuario({camposTabla}) VALUES ({qntd})'
         cursor = self.connection.cursor()
         cursor.execute(use)
@@ -55,11 +56,24 @@ class UserDatabase(Config):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
         cursor.execute(use)
-        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos 
+        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos,RA.Fecha_Registro
         FROM Registro_Alimentos AS RA
         JOIN Alimentos AS A ON A.ID_Alimento = RA.ID_Alimento
-        WHERE RA.ID_Usuario = %s'''
+        WHERE RA.ID_Usuario = %s ORDER BY RA.Fecha_Registro DESC'''
         cursor.execute(sql, (id,))
+        return cursor.fetchall()
+    
+    def obtenerRegistrosSemana(self, id, fecha):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        fecha_formateada = fecha.strftime('%Y-%m-%d')
+        sql = '''
+        SELECT Total_Calorias
+        FROM Registro_Alimentos
+        WHERE Fecha_Registro BETWEEN STR_TO_DATE(%s, '%Y-%m-%d') - INTERVAL ((DAYOFWEEK(STR_TO_DATE(%s, '%Y-%m-%d')) + 5) % 7) DAY AND STR_TO_DATE(%s, '%Y-%m-%d') AND ID_Usuario = %s
+        '''
+        cursor.execute(sql, (fecha_formateada,fecha_formateada,fecha_formateada,id,))
         return cursor.fetchall()
         
 class FoodDatabase(Config):

@@ -24,32 +24,40 @@ class Register(UserControl):
         self.peso = TextField(label='Peso kg.',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))    
         self.altura = TextField(label='Altura cm.',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.edad = TextField(label='Edad',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
-        self.genero = PopupMenuButton(
-                    content= Icon(name=icons.TRANSGENDER,color='black'),
-                                items=[
-                                PopupMenuItem(icon=icons.MALE,text="Hombre",on_click=self.Hombre),
-                                PopupMenuItem(),  # divider
-                                PopupMenuItem(icon=icons.FEMALE,text="Mujer",on_click=self.Mujer),        
-                                ]
-                        
+        self.genero = Dropdown(
+            width=120,
+            label="Sexo",
+            hint_text="Sexo",
+            # text_style=TextStyle(color=self.GRIS),
+            # label_style=TextStyle(color=self.GRIS),
+            suffix_icon=icons.ARROW_DROP_DOWN,
+            options=[
+                dropdown.Option(text='Hombre'),
+                dropdown.Option(text='Mujer'),
+            ]
         )
-
-       
 
         self.TMB = None    
         
         row = Row(
+            # expand=True,
             spacing=21
-            ,controls=[self.peso,self.altura,self.edad,self.genero],
+            ,controls=[self.peso,self.altura],
+            alignment = MainAxisAlignment.CENTER
+            )
+        row2 = Row(
+            # expand=True,
+            spacing=21
+            ,controls=[self.edad,self.genero],
             alignment = MainAxisAlignment.CENTER
             )
         self.registroGUI = Container(
-            expand=True,
+            # expand=True,
             alignment=alignment.center,
             
             content=Container(
                 bgcolor="white",
-                height=Page.window_max_height,width=500,
+                height=700,width=700,
                 border=border.all(1,self.GRIS),
                 border_radius=border_radius.all(11),
                 content=Column(
@@ -63,7 +71,8 @@ class Register(UserControl):
                         self.contrasenia,
                         self.contraseniaRep,
                         row,
-                        #self.genero,
+                        row2,
+                        # self.genero,
                         self.botonRegistro,
                         TextButton(text='Iniciar Sesión',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go('/')),
                     ]
@@ -71,32 +80,27 @@ class Register(UserControl):
                 )
             )
         )
-
-    def Hombre(self,e):
-            self.genero = 1
-            return self.genero
-    def Mujer(self,e):
-            self.genero = 2
-            return self.genero
         
-    def calcularTMB(self):
-        self.TMB = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
-        return self.TMB
+    def calcularTMB(self,genero):
+        if genero == 'Hombre':
+            self.TMB = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
+            return self.TMB
+        elif genero == 'Mujer':
+            self.TMB = 447.593 + (9.247 * float(self.peso.value)) + (3.098 * float(self.altura.value)) - (4.330 * float(self.edad.value))
+            return self.TMB
         
     def registrarUsuario(self,e):
-        
-        # Si no introduce valores que no son enteros o flotantes, se genera un error.
         try:
             edad = int(self.edad.value)
             altura = float(self.altura.value)
             peso = float(self.peso.value)
             nombre = "".join(self.nombre.value.split(" "))
-            genero = self.genero
+            genero = self.genero.value
         except ValueError:
             Notification(self.page, 'Has dejado valores vacios o son inválidos!', 'red').mostrar_msg()
             return
 
-        calculoTMB = self.calcularTMB()
+        calculoTMB = self.calcularTMB(genero)
 
         if(nombre.isalpha() == False):
             Notification(self.page,'El nombre no puede contener números!','red').mostrar_msg()

@@ -6,7 +6,7 @@ from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, Responsiv
 from Notification import Notification
 from AlertDialog import *
 from Database import FoodDatabase
-from datetime import datetime, timedelta
+import datetime
 import decimal
 
 
@@ -153,7 +153,7 @@ class CartaBuscador(ft.UserControl):
         hidratos_por_taza = self.dato[7]
         
         print(valor_cantidad)
-        factor_conversion = valor_cantidad / self.dato[8]
+        factor_conversion = valor_cantidad / self.dato[3]
 
         self.kcal.value = round(factor_conversion * energia_por_taza,2)
         self.proteina.value = round(factor_conversion * proteina_por_taza,2)
@@ -170,7 +170,8 @@ class CartaBuscador(ft.UserControl):
         
     def registrarAlimento(self,e):
         id = self.route.getId()
-        fecha = datetime.now()
+        # fecha = datetime.datetime.today().strftime(f"%Y-%m-%d")
+        fecha = self.route.index.fechaActual
         horario = self.route.buscador.horario
 
         #datos = [id, self.dato[9], fecha, self.kcal.value, horario]

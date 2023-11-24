@@ -6,6 +6,7 @@ from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, Responsiv
 from Cartas import CartaRegistroAlimento
 from Database import UserDatabase
 from AlertDialog import RegisterDialog
+import datetime
 
 class Index(ft.UserControl):
     def __init__(self, route):
@@ -18,25 +19,17 @@ class Index(ft.UserControl):
         self.lvCena = ft.ListView(expand=True,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
         
         self.calRestantes = ft.Text('Calorías restantes: 1000',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
-        self.calConsumidas = ft.Text(weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
-        self.lipidos = ft.Text(weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
-        self.proteinas = ft.Text(weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
-        self.carbohidratos = ft.Text(weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
+        self.calConsumidas = ft.Text(value='Calorías consumidas: 0',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
+        self.lipidos = ft.Text(value='Lipidos: 0%',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
+        self.proteinas = ft.Text(value='Proteinas: 0%',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
+        self.carbohidratos = ft.Text(value='Carbohidratos: 0%',weight=ft.FontWeight.BOLD,size=15,color=self.GRIS)
+        
+        self.fechaActual = datetime.datetime.today().strftime(f"%Y-%m-%d")
         
         self.dialogContent = ft.Container(
 
             content=ft.Column(
                 controls=[
-                    # ft.Dropdown(
-                    #     options=[
-                    #         ft.dropdown.Option(i) for i in range(1, 25)
-                    #     ],
-                    # ),
-                    # ft.Dropdown(
-                    #     options=[
-                    #         ft.dropdown.Option(i) for i in range(1, 61)
-                    #     ],
-                    # ),
                     ft.Row(
                         controls=[
                             ft.TextField(label='Hora',expand=1),
@@ -226,7 +219,8 @@ class Index(ft.UserControl):
                                     # expand=1,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
-                                        ft.ElevatedButton(text='Añadir Recordatorio',icon=ft.icons.ACCESS_ALARM,style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.boton_agregar)
+                                        ft.ElevatedButton(text='Añadir Recordatorio',icon=ft.icons.ACCESS_ALARM,style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.boton_agregar),
+                                        ft.ElevatedButton(text='Modificar Dia',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia)
                                     ]
                                 ),
                             ]
@@ -243,6 +237,18 @@ class Index(ft.UserControl):
                 ]
             )
         )
+        
+    def modDia(self,e):
+        # Convertir la cadena a un objeto datetime
+        fecha_actual_dt = datetime.datetime.strptime(self.fechaActual, f"%Y-%m-%d")
+
+        # Sumar un día a la fecha actual
+        fecha_siguiente = fecha_actual_dt + datetime.timedelta(days=1)
+
+        # Convertir la fecha resultante de nuevo a una cadena si es necesario
+        self.fechaActual = fecha_siguiente.strftime(f"%Y-%m-%d")
+        print(self.fechaActual)
+        self.inicializar()
         
     def tomarHorario(self,e):
         self.route.buscador.establecer_Horario(e.control.key)
@@ -273,28 +279,29 @@ class Index(ft.UserControl):
         mydb.close()
         
         for data in resultado:
-            if data[2] == 'desayuno':
-                item = CartaRegistroAlimento(self.route,data)
-                self.lvDesayuno.controls.append(item)
-            elif data[2] == 'almuerzo':
-                item = CartaRegistroAlimento(self.route,data)
-                self.lvAlmuerzo.controls.append(item)
-            elif data[2] == 'cena':
-                item = CartaRegistroAlimento(self.route,data)
-                self.lvCena.controls.append(item)
-            sumaKcal += data[1]
-            sumaProteinas += data[3]
-            sumaLipidos += data[4]
-            sumaCarbohidratos += data[5]
+            fecha_comparar = data[6].strftime(f"%Y-%m-%d")
+            if self.fechaActual == fecha_comparar:
+                if data[2].lower() == 'desayuno':
+                    item = CartaRegistroAlimento(self.route,data)
+                    self.lvDesayuno.controls.append(item)
+                elif data[2].lower() == 'almuerzo':
+                    item = CartaRegistroAlimento(self.route,data)
+                    self.lvAlmuerzo.controls.append(item)
+                elif data[2].lower() == 'cena':
+                    item = CartaRegistroAlimento(self.route,data)
+                    self.lvCena.controls.append(item)
+                sumaKcal += data[1]
+                sumaProteinas += data[3]
+                sumaLipidos += data[4]
+                sumaCarbohidratos += data[5]
         total = sumaProteinas + sumaLipidos + sumaCarbohidratos
-        try:
+        if total > 0:
             self.calConsumidas.value = f'Calorías consumidas: {sumaKcal}'
             self.proteinas.value = f'Proteinas: {round((sumaProteinas / total) * 100, 2)}%'
             self.lipidos.value = f'Lipidos: {round((sumaLipidos / total) * 100, 2)}%'
             self.carbohidratos.value = f'Cabrohidratos:: {round((sumaCarbohidratos / total) * 100, 2)}%'
-            self.cont.update()
-        except(ZeroDivisionError):
-            pass
+        self.cont.update()
+        
     def build(self):
         return self.cont
     
