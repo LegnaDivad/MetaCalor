@@ -123,7 +123,7 @@ class Register(UserControl):
             Notification(self.page,'No has seleccionado un genero!','red').mostrar_msg()
             return
         else:
-            datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
+            datos = [self.nombre.value, self.usuario.value, genero, peso, self.contrasenia.value, calculoTMB]
 
         #datos = [self.nombre.value, self.usuario.value, self.contrasenia.value, calculoTMB]
 
@@ -141,7 +141,7 @@ class Register(UserControl):
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
         Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
-        print(genero)
+
         self.route.page.go('/')
             
     def build(self):

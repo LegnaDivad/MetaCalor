@@ -27,8 +27,8 @@ class UserDatabase(Config):
         
     def registrarUsuario(self,datos):
         use = 'USE metaclr'
-        camposTabla = ('Nombre,nickname,contrasenia,TMB')
-        qntd = ('%s, %s, %s, %s')
+        camposTabla = ('Nombre,nickname,Sexo,Peso,contrasenia,TMB')
+        qntd = ('%s, %s, %s, %s, %s, %s')
         sql = f'INSERT INTO Usuario({camposTabla}) VALUES ({qntd})'
         cursor = self.connection.cursor()
         cursor.execute(use)

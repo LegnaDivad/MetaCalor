@@ -287,12 +287,14 @@ class Index(ft.UserControl):
             sumaLipidos += data[4]
             sumaCarbohidratos += data[5]
         total = sumaProteinas + sumaLipidos + sumaCarbohidratos
-        self.calConsumidas.value = f'Calorías consumidas: {sumaKcal}'
-        self.proteinas.value = f'Proteinas: {round((sumaProteinas / total) * 100, 2)}%'
-        self.lipidos.value = f'Lipidos: {round((sumaLipidos / total) * 100, 2)}%'
-        self.carbohidratos.value = f'Cabrohidratos:: {round((sumaCarbohidratos / total) * 100, 2)}%'
-        self.cont.update()
-        
+        try:
+            self.calConsumidas.value = f'Calorías consumidas: {sumaKcal}'
+            self.proteinas.value = f'Proteinas: {round((sumaProteinas / total) * 100, 2)}%'
+            self.lipidos.value = f'Lipidos: {round((sumaLipidos / total) * 100, 2)}%'
+            self.carbohidratos.value = f'Cabrohidratos:: {round((sumaCarbohidratos / total) * 100, 2)}%'
+            self.cont.update()
+        except(ZeroDivisionError):
+            pass
     def build(self):
         return self.cont
     

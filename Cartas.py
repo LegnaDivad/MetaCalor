@@ -74,9 +74,9 @@ class CartaBuscador(ft.UserControl):
         self.proteina = ft.Text(color='white',value=0)
         self.lipidos = ft.Text(color='white',value=0)
         self.hidratos = ft.Text(color='white',value=0)
-        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='white')
+        self.unidad = ft.Text(value=f'Unidad: {datos[2]}\n',color='white')
         
-        self.cantidadDato = ft.TextField(value=0,label='Cantidad',on_submit=self.calcular_nutrientes)
+        self.cantidadDato = ft.TextField(value=0,label='Cantidad - Presiona Enter para confirmar',on_submit=self.calcular_nutrientes)
         self.content = ft.Container(
             content=ft.Column(
                 controls=[
