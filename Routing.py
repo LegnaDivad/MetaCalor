@@ -29,6 +29,8 @@ class Router:
             '/informe' : self.informe,
             '/competencia' : self.competencia,
             '/buscador' : self.buscador,
+            '/registro_ejercicios' : self.registroEjercicios,
+            '/buscador_ejercicios' : self.buscadorEjercicios
         }
         
         self.llamada = {
@@ -38,6 +40,8 @@ class Router:
             '/informe' : self.informe.inicializar,
             '/competencia' : self.competencia.inicializar,
             '/buscador' : self.buscador.inicializar,
+            '/registro_ejercicios' : self.registroEjercicios.inicializar,
+            '/buscador_ejercicios' : self.buscadorEjercicios.inicializar
         }
         
         self.menu = SideMenu(self)
