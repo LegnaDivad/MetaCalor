@@ -19,6 +19,8 @@ class Router:
         self.login = Login(self)
         self.registro = Register(self)
         self.buscador = Search(self)
+        self.registroEjercicios = RegistroEjercicios(self)
+        self.buscadorEjercicios = SearchEjercicios(self)
         
         self.idLogin = None
         
