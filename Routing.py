@@ -8,6 +8,8 @@ from Informe import Informe
 from Login import Login
 from Registro import Register
 from Search import Search
+from Perfil import Perfil
+import datetime
 
 class Router:
     def __init__(self,page: ft.Page):
@@ -19,10 +21,10 @@ class Router:
         self.login = Login(self)
         self.registro = Register(self)
         self.buscador = Search(self)
-        self.registroEjercicios = RegistroEjercicios(self)
-        self.buscadorEjercicios = SearchEjercicios(self)
+        self.perfil = Perfil(self)
         
         self.idLogin = None
+        # self.fechaActual = datetime.datetime.today().strftime(f"%Y-%m-%d")
         
         self.routes = {
             '/' : self.login,
@@ -31,8 +33,7 @@ class Router:
             '/informe' : self.informe,
             '/competencia' : self.competencia,
             '/buscador' : self.buscador,
-            '/registro_ejercicios' : self.registroEjercicios,
-            '/buscador_ejercicios' : self.buscadorEjercicios
+            '/perfil' : self.perfil
         }
         
         self.llamada = {
@@ -42,8 +43,7 @@ class Router:
             '/informe' : self.informe.inicializar,
             '/competencia' : self.competencia.inicializar,
             '/buscador' : self.buscador.inicializar,
-            '/registro_ejercicios' : self.registroEjercicios.inicializar,
-            '/buscador_ejercicios' : self.buscadorEjercicios.inicializar
+            '/perfil' : self.perfil.inicializar,
         }
         
         self.menu = SideMenu(self)

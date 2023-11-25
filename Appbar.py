@@ -58,7 +58,7 @@ class Appbar(ft.UserControl):
                             ft.PopupMenuButton(
                                 content=ft.Icon(name=ft.icons.ARROW_DOWNWARD,color='black'),
                                 items=[
-                                    ft.PopupMenuItem(icon=ft.icons.PERSON,text="Perfil de Usuario"),
+                                    ft.PopupMenuItem(icon=ft.icons.PERSON,text="Perfil de Usuario",on_click=lambda _: self.route.page.go('/perfil')),
                                     ft.PopupMenuItem(),  # divider
                                     ft.PopupMenuItem(icon=ft.icons.LOGOUT,text="Cerrar Sesión",on_click=self.cerrarSesion),
                                 ]
