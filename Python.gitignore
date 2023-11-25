@@ -121,7 +121,6 @@ celerybeat.pid
 
 # Environments
 envMac/
-envWin\
 envWin/
 .env
 .venv
