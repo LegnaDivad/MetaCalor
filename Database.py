@@ -122,6 +122,7 @@ class FoodDatabase(Config):
         # return 'introducido'
         return not None
         
+
 class generalDatabaseAccess(Config):
     def __init__(self,route) -> None:
         super().__init__()
@@ -145,6 +146,7 @@ class generalDatabaseAccess(Config):
         return None
     
     def insertarRegistro(self, tabla_from, valores_insertados, condiciones_where):
+        print(f"INSERT INTO {tabla_from} {valores_insertados} VALUES {condiciones_where}")
         try:
             with self.connection.cursor() as cursor:
                 consulta = f"INSERT INTO {tabla_from} {valores_insertados} VALUES {condiciones_where}"
@@ -154,6 +156,8 @@ class generalDatabaseAccess(Config):
         except Exception as e:
             self.connection.rollback()
             print(f"Error al insertar registro/s: {e}")
+
+        return not None
     
     def modificarRegistro(self, tabla_from, sentencia_set, condiciones_where):
         try:
@@ -165,8 +169,12 @@ class generalDatabaseAccess(Config):
         except Exception as e:
             self.connection.rollback()
             print(f"Error al modificar registro: {e}")
+            return None
+
+        return not None
     
-    def eliminarRegistro(self, tabla_from, condiciones_where, cantidad=0):
+    def eliminarRegistro(self, tabla_from, condiciones_where):
+        print(f"DELETE FROM {tabla_from} WHERE {condiciones_where} ")
         try:
             with self.connection.cursor() as cursor:
                 consulta = f"DELETE FROM {tabla_from} WHERE {condiciones_where} "
@@ -176,3 +184,6 @@ class generalDatabaseAccess(Config):
         except Exception as e:
             self.connection.rollback()
             print(f"Error al recuperar registros: {e}")
+            return None
+
+        return not None
