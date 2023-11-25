@@ -55,8 +55,15 @@ class Login(UserControl):
                             style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),
                             on_click=lambda _: self.page.go('/registro')),
                     ]
+                ),
+                shadow=BoxShadow(
+                    spread_radius=1,
+                    blur_radius=15,
+                    color=colors.BLUE_GREY_300,
+                    offset=Offset(0, 0),
+                    blur_style=ShadowBlurStyle.OUTER,
                 )
-            )
+            ),
         )
         
     def IniciarIndex(self,resultado):

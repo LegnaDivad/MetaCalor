@@ -13,8 +13,13 @@ class Informe(ft.UserControl):
         
         self.colorBoton = '#eff1ed'
         
+        self.fechaActual = datetime.datetime.now()
+        self.aux = datetime.datetime.now()
+        
         self.kcalTotales = ft.Text(color='black')
         self.informeBoton = ft.ElevatedButton(text='Descargar Informe',style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)))
+        self.semanaAnteriorBoton = ft.TextButton(text='Semana Anterior',style=ft.ButtonStyle(color='Black',shape=ft.RoundedRectangleBorder(radius=10)),on_click=self.retrocederSemana)
+        self.semanaActualBoton = ft.TextButton(disabled=True,text='Semana Actual',style=ft.ButtonStyle(color='green',shape=ft.RoundedRectangleBorder(radius=10)),on_click=self.adelantarSemana)
         
         self.lipidos = None
         self.proteinas = None
@@ -46,17 +51,16 @@ class Informe(ft.UserControl):
         self.informeAlimentos = ft.Container(
             expand=True,
             bgcolor='#bcbd8b',
-            margin=50,
+            margin=70,
             padding=30,
             alignment=ft.alignment.center,
-            content=ft.Column(
+            content=ft.Row(
                 expand=True,
                 controls=[
-                    ft.Text(value='Informe Semanal de Alimentos',color='black'),
                     ft.Column(
                         expand=True,
-                        alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
+                            ft.Text(value='Informe Semanal de Alimentos',color='black'), 
                             self.kcalTotales,
                         ]
                     ),
@@ -64,7 +68,13 @@ class Informe(ft.UserControl):
                         expand=True,
                         content=self.chart
                     ),
-                    self.informeBoton
+                    ft.Column(
+                        expand=True,
+                        horizontal_alignment=ft.CrossAxisAlignment.END,
+                        controls=[
+                            self.informeBoton,
+                        ]
+                    ),
                 ]
             )
         )
@@ -72,18 +82,42 @@ class Informe(ft.UserControl):
         self.informeEjercicios = ft.Container(
             expand=True,
             bgcolor='#bcbd8b',
-            margin=50
+            margin=70
         )
         
-        self.index = ft.Container(
-            content=ft.Row(
+        self.cont = ft.Container(
+            content=ft.Column(
                 expand=True,
                 controls=[
+                    ft.Row(
+                        controls=[
+                            self.semanaAnteriorBoton,
+                            self.semanaActualBoton
+                        ]
+                    ),
                     self.informeAlimentos,
                     self.informeEjercicios
                 ]
             )
         )
+        
+    def retrocederSemana(self,e):
+        self.semanaAnteriorBoton.style = ft.ButtonStyle(color='green')
+        self.semanaActualBoton.style = ft.ButtonStyle(color='black')
+        self.semanaAnteriorBoton.disabled = True
+        self.semanaActualBoton.disabled = False
+        dias_para_restar = (self.fechaActual.weekday() - 6) % 7
+        fecha_domingo = self.fechaActual - datetime.timedelta(days=dias_para_restar)
+        self.fechaActual = fecha_domingo
+        self.obtenerInfo()
+        
+    def adelantarSemana(self,e):
+        self.semanaAnteriorBoton.style = ft.ButtonStyle(color='black')
+        self.semanaActualBoton.style = ft.ButtonStyle(color='green')
+        self.semanaAnteriorBoton.disabled = False
+        self.semanaActualBoton.disabled = True
+        self.fechaActual = self.aux
+        self.obtenerInfo()
         
     def badge(self,icon,size):
         return ft.Container(
@@ -109,16 +143,16 @@ class Informe(ft.UserControl):
         pass
     
     def obtenerInfo(self):
+        # print(self.fechaActual)
         sumaKcal = 0
         sumaLipidos = 0
         sumaProteinas = 0
         sumaCarbohidratos = 0
         total = 0
-        fecha_actual = datetime.datetime.now()
         
         mydb = UserDatabase(self.route)
         mydb.connect()
-        resultado = mydb.obtenerRegistrosSemana(self.route.getId(),fecha_actual)
+        resultado = mydb.obtenerRegistrosSemana(self.route.getId(),self.fechaActual)
         mydb.close()
         for dato in resultado:
             sumaKcal += dato[0]
@@ -128,10 +162,16 @@ class Informe(ft.UserControl):
             
         total = sumaLipidos + sumaProteinas + sumaCarbohidratos
         
-        self.lipidos = round((sumaLipidos / total) * 100,2)
-        self.proteinas = round((sumaProteinas / total) * 100,2)
-        self.carbohidratos = round((sumaCarbohidratos / total) * 100,2)
-        self.kcalTotales.value = f'Calorías consumidas en la semana: {sumaKcal}'
+        if total > 0:
+            self.lipidos = round((sumaLipidos / total) * 100,2)
+            self.proteinas = round((sumaProteinas / total) * 100,2)
+            self.carbohidratos = round((sumaCarbohidratos / total) * 100,2)
+            self.kcalTotales.value = f'Calorías consumidas en la semana: {sumaKcal}'
+        else:
+            self.lipidos = 0
+            self.proteinas = 0
+            self.carbohidratos = 0
+            self.kcalTotales.value = 0
         
         self.chart.sections.clear()
         self.chart.sections.append(
@@ -167,11 +207,13 @@ class Informe(ft.UserControl):
                 badge_position=0.98,
             ),
         )
-        self.index.update()
+        
+        self.cont.update()
         
     def build(self):
-        return self.index
+        return self.cont
     
     def inicializar(self):
+        # self.kcalTotales.value = 0
         self.obtenerInfo()
         print('Inicializando Informe')

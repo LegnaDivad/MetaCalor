@@ -58,7 +58,6 @@ class Register(UserControl):
             content=Container(
                 bgcolor="white",
                 height=700,width=700,
-                border=border.all(1,self.GRIS),
                 border_radius=border_radius.all(11),
                 content=Column(
                     alignment=MainAxisAlignment.CENTER,
@@ -77,6 +76,13 @@ class Register(UserControl):
                         TextButton(text='Iniciar Sesión',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go('/')),
                     ]
                     
+                ),
+                shadow=BoxShadow(
+                    spread_radius=1,
+                    blur_radius=15,
+                    color=colors.BLUE_GREY_300,
+                    offset=Offset(0, 0),
+                    blur_style=ShadowBlurStyle.OUTER,
                 )
             )
         )
