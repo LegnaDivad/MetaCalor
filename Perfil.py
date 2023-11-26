@@ -3,14 +3,20 @@ from flet import *
 from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
-
+from Database import UserDatabase
 
 
 class Perfil(UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
-
+        self.nickname = Text(weight=FontWeight.BOLD,color='white',text_align=TextAlign.CENTER,expand=True, size=20)
+        self.nombre = Text(weight=FontWeight.BOLD,color='white',text_align=TextAlign.CENTER,expand=True, size=20)
+        self.edad = Text(weight=FontWeight.BOLD,color='red',text_align=TextAlign.CENTER,expand=True, size=25)
+        self.contrasena = Text(weight=FontWeight.BOLD,color='red',text_align=TextAlign.CENTER,expand=True, size=25)
+        self.peso = Text(weight=FontWeight.BOLD,color='red',text_align=TextAlign.CENTER,expand=True, size=25)
+        self.id = Text(weight=FontWeight.BOLD,color='red',text_align=TextAlign.CENTER,expand=True, size=25)
+        
         
        
 
@@ -41,7 +47,7 @@ class Perfil(UserControl):
                                         Row(
                                             alignment=alignment.top_center,
                                             controls=[
-                                                Text('  Datos de la cuenta                                                    ', color='#252422', size=30),
+                                                Text('  Datos de la cuenta                                           ', color='#252422', size=30),
                                                 ElevatedButton(text='Editar', style=ButtonStyle(color='#252422', shape=RoundedRectangleBorder(radius=10)), on_click=self.inicializar),
                                             ]
                                         ),
@@ -49,15 +55,43 @@ class Perfil(UserControl):
                                             expand=True,
                                             controls=[
                                                 Column(
-                                                    spacing=30,
+                                                    spacing=100,
                                                     expand=True,
                                                     controls=[
-                                                        Container(content=Text('    Nombre: ', color='Black', size=25), margin=10, bgcolor='white', border_radius=border_radius.all(20)),
-                                                        Row([Icon(),Icon(color="white",size=40,name=icons.FEATURED_VIDEO_ROUNDED), Text('Edad: ', color='white')]),
-                                                        Row([Icon(),Icon(color="white",size=40,name=icons.PERSON), Text('Usuario: ', color='white')]),
-                                                        Row([Icon(),Icon(color="white",size=40,name=icons.FOOD_BANK), Text('Alimentos Reg: ', color='white')]),
-                                                        Row([Icon(),Icon(color="white",size=40,name=icons.SCALE), Text('Peso: ', color='white')]),
-                                                        Row([Icon(),Icon(color="white",size=40,name=icons.LOCK), Text('Constrasena: ', color='white')]),
+                                                        Row(
+                                                            
+                                                            controls=[
+                                                                Text('    Nombre: ', color='White', size=25),
+                                                                self.nombre
+                                                            ]
+                                                        ),
+                                                        Row(
+                                                            spacing=250,
+                                                            controls=[
+                                                                 Column(
+                                                                    spacing=100,
+                                                            controls=[
+                                                            
+                                                            Row([Icon(),Icon(color="white",size=40,name=icons.PERSON), Text('Usuario: ', color='white')]),
+                                                            Row([Icon(),Icon(color="white",size=40,name=icons.LOCK), Text('Constrasena: ', color='white')]),
+                                                          
+                                                            ],
+                                                        ),
+                                                        Column(
+                                                            spacing=100,
+                                                            controls=[
+                                                            Row([Icon(),Icon(color="white",size=40,name=icons.SCALE), Text('Peso: ', color='white')]),
+                                                            Row(
+                                                                
+                                                            [Icon(),Icon(color="white",size=40,name=icons.FEATURED_VIDEO_ROUNDED), Text('Edad: ', color='white')]
+                                                            
+                                                            ),
+                                                           
+                                                    ]),
+                                                            ]
+                                                        ),
+                                                       
+                                                          Row([Icon(),Icon(color="white",size=40,name=icons.FOOD_BANK), Text('Alimentos Reg: ', color='white')]),
                                                     ]
                                                 ),
                                                 
@@ -165,8 +199,56 @@ class Perfil(UserControl):
         return self.perfilcont
         
     def inicializar(self):
-
+        
         print('Inicializando Perfil')
 
- 
+    def set_Nickname(self, texto):
+        self.nickname.value = texto
+        self.route.page.update()
+
+
+    
+
+    def set_info(self,id):
+        mydb = UserDatabase(self.route)
+        mydb.connect()
+        resultado = mydb.get_info(id)
+        mydb.close()
+        
+        self.set_Nombre(resultado[0])
+        self.set_Edad(resultado[1])
+        self.set_Contrasena(resultado[2])
+        self.set_Peso(resultado[3])
+        self.set_ID(resultado[4])
+        # self.set_Alimentos(resultado[5])
+        # self.set_Metas(resultado[6])
+
+    def set_Nombre(self, texto):
+        self.nombre.value = texto
+        self.route.page.update()
+    
+    def set_Edad(self, texto):
+        self.edad.value = texto
+        self.route.page.update()
+    
+    def set_Contrasena(self, texto):
+        self.contrasena.value = texto
+        self.route.page.update()
+
+    def set_Peso(self, texto):
+        self.peso.value = texto
+        self.route.page.update()
+
+    def set_ID(self, texto):
+        self.id.value = texto
+        self.route.page.update()
+
+    # def set_Alimentos(self, texto):
+    #     self.alimentos.value = texto
+    #     self.route.page.update()
+    
+    # def set_Metas(self, texto):
+    #     self.metas.value = texto
+    #     self.route.page.update()
+
    

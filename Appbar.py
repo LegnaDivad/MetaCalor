@@ -10,7 +10,6 @@ class Appbar(ft.UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
-        
         self.GRIS = '#252422'
         
         self.nickname = ft.Text(weight=ft.FontWeight.BOLD,color='black',text_align=ft.TextAlign.CENTER,expand=True)
@@ -20,6 +19,7 @@ class Appbar(ft.UserControl):
         
         self.hour_text = ft.Text('', size=35, weight=ft.FontWeight.W_600,color='white')
         self.day_text = ft.Text(size=20,weight=ft.FontWeight.W_600,color='white')
+        
     
         self.bar = ft.AppBar(
             # leading=ft.Icon(ft.icons.PALETTE),
