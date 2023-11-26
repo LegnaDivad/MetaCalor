@@ -6,6 +6,9 @@ from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, Responsiv
 from Database import UserDatabase
 from Notification import Notification
 
+
+
+
 class Login(UserControl):
     def __init__(self, route):
         super().__init__()
