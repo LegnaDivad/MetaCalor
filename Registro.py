@@ -8,6 +8,9 @@ from AlertDialog import ConfirmDialog
 from Notification import Notification
 
 
+global Titulo, Confirmacion
+Titulo = "Registro de Usuarios"
+Confirmacion = "se ha registrado correctamente!"
 class Register(UserControl):
     def __init__(self, route):
         super().__init__()
@@ -64,7 +67,7 @@ class Register(UserControl):
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                     spacing=15,
                     controls=[
-                        Text('Registro de Usuario',font_family="Arial #4D4D4D",size=30,color='#26587E'),
+                        Text(Titulo,font_family="Arial #4D4D4D",size=30,color='#26587E'),
                         self.nombre,
                         self.usuario,
                         self.contrasenia,
@@ -73,6 +76,7 @@ class Register(UserControl):
                         row2,
                         # self.genero,
                         self.botonRegistro,
+
                         TextButton(text='Iniciar Sesión',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go('/')),
                     ]
                     
@@ -146,13 +150,19 @@ class Register(UserControl):
         if resultado is None:
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
-        Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
-        self.route.page.go('/')
+        Notification(self.page,Confirmacion,'green').mostrar_msg()
+        self.page.go('/')
             
     def build(self):
         return self.registroGUI
 
     def inicializar(self):
+        from Perfil import Editing
+        if  Editing == False:
+            self.editing = False
+        else:
+            self.editing = True
+            
         self.nombre.value = None
         self.usuario.value = None
         self.contrasenia.value = None
@@ -163,3 +173,4 @@ class Register(UserControl):
         # self.genero = None
         self.registroGUI.update()
         print('Inicializando Registro')
+        
