@@ -5,7 +5,7 @@ from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 from Notification import Notification
 from AlertDialog import *
-from Database import FoodDatabase, UserDatabase
+from Database import FoodDatabase, UserDatabase, MetaDatabase
 import datetime
 import decimal
 
@@ -57,11 +57,49 @@ class CartaRegistroAlimento(ft.UserControl):
         )
         
     def eliminarAlimento(self,e):
+        Kcal = self.datos[1]
+        
         mydb = UserDatabase(self.route)
         mydb.connect()
-        # resultado = mydb.ObtenerRegistros(self.datos[7])
         mydb.eliminarRegistroAlimento(self.datos[7])
         mydb.close()
+        
+        dia_actual = datetime.datetime.now()
+        dia_actual_str = dia_actual.strftime('%Y-%m-%d')
+        semana_actual = datetime.datetime.now().isocalendar()[1]
+        semana_actual = semana_actual + 1
+        
+        mydb = MetaDatabase(self.route)
+        mydb.connect()
+        resultado = mydb.obtenerRegistrosSem(self.route.getId(),'Calorica',semana_actual)
+        
+        if resultado:
+            for dato in resultado:
+                rest = dato[0] - decimal.Decimal(Kcal)
+                
+                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',4)
+                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',5)
+                
+                
+        if self.datos[8] == 'Verduras':
+            resultado2 = mydb.obtenerRegistrosDiarios(self.route.getId(),2,dia_actual_str)
+            if resultado2:
+                if resultado2[1] == 'Completada':
+                    mydb.restarObjetivosUsuario(self.route.getId())
+                rest = resultado2[0] - 1
+                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',2)
+                
+            
+        if self.datos[8] == 'Frutas':
+            resultado2 = mydb.obtenerRegistrosDiarios(self.route.getId(),1,dia_actual_str)
+            if resultado2:
+                if resultado2[1] == 'Completada':
+                    mydb.restarObjetivosUsuario(self.route.getId())
+                rest = resultado2[0] - 1
+                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',1)
+                
+            mydb.close()
+        
         self.route.index.agregarComidas()
         self.route.page.update()
         
@@ -206,11 +244,71 @@ class CartaBuscador(ft.UserControl):
             if resultado is None:
                 Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
                 return
+            
             Notification(self.page,'Se ha registrado el alimento correctamente!','green').mostrar_msg()
+            self.registrarProgresoMeta()
             self.route.page.go('/index')
         else:
             Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
+    
+    def registrarProgresoMeta(self):
+        fecha_actual = datetime.datetime.now()
+        totalKcal = 0
         
+        mydb = MetaDatabase(self.route)
+        mydb.connect()
+        resultados = mydb.obtenerMetasEnProgreso(self.route.getId())
+        
+        mydb2 = UserDatabase(self.route)
+        mydb2.connect()
+        resultadoCal = mydb2.obtenerRegistrosSemana(self.route.getId(),fecha_actual)
+        
+        for datosCal in resultadoCal:
+            totalKcal += datosCal[0]
+        
+        if not resultados:
+            print("no hay objetivos pendientes")
+        else:
+            for datos in resultados:
+                # if datos[3] == 'Diaria':
+                #     if self.dato[1] == 'Verduras':
+                #         aux = datos[1]
+                #         aux += 1
+                #         # if aux == datos[2]:
+                #         #     mydb.registrarProgresoMeta(self.route.getId(),aux,'Completada',2)
+                #         #     mydb.actualizarObjetivosUsuario(self.route.getId())
+                #         # elif aux < datos[2]:
+                #         #     mydb.registrarProgresoMeta(self.route.getId(),aux,'En Progreso',2)
+                #         if aux <= datos[2]:
+                #             if aux == datos[2]:
+                #                 mydb.registrarProgresoMeta(self.route.getId(), aux, 'Completada', 2)
+                #                 mydb.actualizarObjetivosUsuario(self.route.getId())
+                #             else:
+                #                 mydb.registrarProgresoMeta(self.route.getId(), aux, 'En Progreso', 2)
+                #     elif self.dato[1] == 'Frutas':
+                #         # if datos[1] is None:
+                #         #     aux = 1
+                #         # else:
+                #         aux = datos[1]
+                #         if aux == datos[2]:
+                #             mydb.registrarProgresoMeta(self.route.getId(),aux+1,'Completada',1)
+                #             mydb.actualizarObjetivosUsuario(self.route.getId())
+                #         elif aux < datos[2]:
+                #             mydb.registrarProgresoMeta(self.route.getId(),aux,'En Progreso',1)
+                if datos[4] == 'Calorica':
+                    auxC = totalKcal
+                    if auxC < datos[2] and datos[2] == 2000:
+                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'En progreso',4)
+                    elif auxC >= datos[2] and datos[2] == 2000:
+                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'Completada',4)
+                        mydb.actualizarObjetivosUsuario(self.route.getId())
+                    if auxC < datos[2] and datos[2] == 10000:
+                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'En progreso',5)
+                    elif auxC >= datos[2] and datos[2] == 10000:
+                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'Completada',5)
+                        mydb.actualizarObjetivosUsuario(self.route.getId())
+        mydb.close()
+
     def build(self):
         self.kcal.value = 0
         self.proteina.value = 0
@@ -219,3 +317,61 @@ class CartaBuscador(ft.UserControl):
         self.cantidadDato.value = None
         # self.cantidadDato.update()
         return self.carta
+    
+class CartaMeta(ft.UserControl):
+    def __init__(self, route, datos):
+        super().__init__()
+        self.route = route
+        self.dato = datos
+        
+        self.GRIS = '#252422'
+        
+        
+        self.valorMeta = ft.Text(value=int(self.dato[0]),color=self.GRIS,size=20)
+        self.valorActual = ft.Text(value=int(self.dato[2]),color=self.GRIS,size=20)
+        valor = self.valorActual.value / self.valorMeta.value
+        
+        self.descripcion = ft.Text(value=self.dato[1],color=self.GRIS,size=25,weight=ft.FontWeight.BOLD,text_align='center')
+        self.progreso = ft.ProgressBar(height=13,value=valor,width=700,color='blue',bgcolor='black')
+        
+        self.metasContenedor = ft.Card(
+            color='#FFFCF2',
+            height=180,
+            content=ft.Container(
+                expand=True,
+                padding=25,
+                content=ft.Row(
+                    # expand=True,
+                    controls=[
+                        ft.Container(
+                            # expand=1,
+                            width=200,
+                            height=210,
+                            bgcolor='#E5E5E5',
+                            border_radius=ft.border_radius.all(13),
+                            content=ft.Icon(ft.icons.EMOJI_EVENTS,color='black',size=60)
+                        ),
+                        ft.Column(
+                            expand=True,
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            controls=[
+                                self.descripcion,
+                                ft.Row(
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    controls=[
+                                        self.valorActual,
+                                        ft.Text(value=" / ",color=self.GRIS,size=20),
+                                        self.valorMeta
+                                    ]
+                                ),
+                                self.progreso
+                            ]
+                        )
+                    ]
+                )
+            )
+        )
+        
+    def build(self):
+        return self.metasContenedor

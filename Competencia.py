@@ -3,6 +3,9 @@ import flet as ft
 from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
+from Database import UserDatabase, MetaDatabase
+from Cartas import CartaMeta
+import datetime
 
 class Competencia(ft.UserControl):
     def __init__(self, route):
@@ -10,17 +13,23 @@ class Competencia(ft.UserControl):
         self.route = route
         
         self.GRIS = '#4D4D4D'
-        
+        self.lvMeta = ft.ListView(expand=3,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
         # -- Controles para el apartado de Usuario
-        self.usuario = ft.Text(value='Usuario',color=self.GRIS,size=34,font_family="Arial Black",weight=ft.FontWeight.BOLD,)
+        self.usuario = ft.Text(color=self.GRIS,size=34,font_family="Arial Black",weight=ft.FontWeight.BOLD,)
+        
+        self.valorMeta = ft.Text('Hola',color=self.GRIS,size=20,weight=ft.FontWeight.BOLD)
+        self.valorMetaNumero = ft.Text('Adiós',color=self.GRIS,size=20,weight=ft.FontWeight.BOLD)
+        self.nickname = ft.Text(color='black',weight=ft.FontWeight.BOLD)
+        
+        
         self.nicknameUsuario = ft.Container(
             height=60,width=240,
             bgcolor='white',
             border_radius=ft.border_radius.all(14),
             alignment=ft.alignment.center,
-            content=ft.Text(value='nickname',color='black',weight=ft.FontWeight.BOLD)
+            content=self.nickname
         )
-        self.metasUsuario = ft.Container(
+        self.MetaUsuario = ft.Container(
             height=130,width=390,
             bgcolor='white',
             border_radius=ft.border_radius.all(14),
@@ -32,15 +41,8 @@ class Competencia(ft.UserControl):
                     ft.Column(
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            ft.Text('2',color='black',weight=ft.FontWeight.BOLD),
-                            ft.Text('Metas Cumplidas',color='black',weight=ft.FontWeight.BOLD),
-                        ]
-                    ),
-                    ft.Column(
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        controls=[
-                            ft.Text('2',color='black',weight=ft.FontWeight.BOLD),
-                            ft.Text('Top',color='black',weight=ft.FontWeight.BOLD),
+                            ft.Text('Te encuentras en el lugar: ',color='black',weight=ft.FontWeight.BOLD),
+                            ft.Text('2',color='black',weight=ft.FontWeight.BOLD)
                         ]
                     )
                 ]
@@ -66,7 +68,7 @@ class Competencia(ft.UserControl):
                             controls=[
                                 self.usuario,
                                 self.nicknameUsuario,
-                                self.metasUsuario
+                                self.MetaUsuario
                             ]
                         )
                     )
@@ -74,8 +76,9 @@ class Competencia(ft.UserControl):
             )
         )
         
+        self.metasCumplidasText = ft.Text(color='black',weight=ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
         # -- Cartas de Estadísticas
-        self.metasCumplidas = ft.Container(
+        self.MetaCumplidas = ft.Container(
             bgcolor='white',
             height=220,width=330,
             border_radius=ft.border_radius.all(25),
@@ -91,13 +94,14 @@ class Competencia(ft.UserControl):
                         alignment=ft.alignment.center,
                         content=ft.Icon(ft.icons.CHECK,color='black',size=60)
                     ),
-                    ft.Text('1',color='black',weight=ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER),
-                    ft.Text('Metas cumplidas',color='black',weight=ft.FontWeight.BOLD),
+                    self.metasCumplidasText,
+                    ft.Text('Meta cumplidas',color='black',weight=ft.FontWeight.BOLD),
                 ]
             )
         )
         
-        self.metasPorCumplir = ft.Container(
+        self.metasCText = ft.Text(color='black',weight=ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
+        self.MetaPorCumplir = ft.Container(
             bgcolor='white',
             height=220,width=330,
             border_radius=ft.border_radius.all(25),
@@ -113,8 +117,8 @@ class Competencia(ft.UserControl):
                         alignment=ft.alignment.center,
                         content=ft.Icon(ft.icons.PRIORITY_HIGH,color='black',size=60)
                     ),
-                    ft.Text('1',color='black',weight=ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER),
-                    ft.Text('Metas por cumplir',color='black',weight=ft.FontWeight.BOLD),
+                    self.metasCText,
+                    ft.Text('Meta por cumplir',color='black',weight=ft.FontWeight.BOLD),
                 ]
             )
         )
@@ -134,8 +138,8 @@ class Competencia(ft.UserControl):
                             expand=True,
                             alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
-                                self.metasCumplidas,
-                                self.metasPorCumplir,
+                                self.MetaCumplidas,
+                                self.MetaPorCumplir,
                             ]
                         )
                     )
@@ -143,49 +147,15 @@ class Competencia(ft.UserControl):
             )
         )
         
-        # -- Apartado de Metas Actuales
-        self.metasActuales = ft.Container(
+        # -- Apartado de Meta Actuales
+        self.MetaActuales = ft.Container(
             expand=True,
             # bgcolor='green',
             border_radius=ft.border_radius.all(25),
             content=ft.Column(
                 controls=[
-                    ft.Text(value='Metas Actuales',color=self.GRIS,size=34,weight=ft.FontWeight.BOLD,expand=1),
-                    ft.Container(
-                        expand=3,
-                        width=800,
-                        padding=30,
-                        bgcolor='white',
-                        alignment=ft.alignment.center,
-                        content=ft.Row(
-                            expand=True,
-                            controls=[
-                                ft.Container(
-                                    expand=1,
-                                    border_radius=ft.border_radius.all(25),
-                                    bgcolor='#E5E5E5',
-                                    padding=30,
-                                    content=ft.Icon(ft.icons.EMOJI_EVENTS,color='black',size=60)
-                                ),
-                                ft.Column(
-                                    expand=3,
-                                    alignment=ft.MainAxisAlignment.CENTER,
-                                    controls=[
-                                        ft.Row(
-                                            # expand=True,
-                                            # run_spacing=-30,
-                                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                                            controls=[
-                                                ft.Text('1200 Calorias',color='black',size=15,weight=ft.FontWeight.BOLD,),
-                                                ft.Text('7000/12000',color='black',size=15,weight=ft.FontWeight.BOLD,),
-                                            ]
-                                        ),
-                                        ft.Text('Aca un progressbar')
-                                    ]
-                                )
-                            ]
-                        )
-                    )
+                    ft.Text(value='Meta Actuales',color=self.GRIS,size=34,weight=ft.FontWeight.BOLD,expand=1),
+                    self.lvMeta
                 ]
             )
         )
@@ -232,11 +202,11 @@ class Competencia(ft.UserControl):
                         # bgcolor='blue',
                         padding=15,
                         content=ft.Column(
-                            expand=True,
+                            # expand=True,
                             controls=[
                                 self.infoUsuario,
                                 self.estadisticas,
-                                self.metasActuales,
+                                self.MetaActuales
                             ]
                         )
                     ),
@@ -248,9 +218,32 @@ class Competencia(ft.UserControl):
                 ]
             )
         )
+        # resultado = mydb.verificarMeta(self.route.getId(),fecha)
         
+    def set_Datos(self,datos):
+        self.nickname.value = datos[0]
+        self.usuario.value = datos[3]
+        
+    def cargarMeta(self):
+        self.lvMeta.clean()
+        mydb = MetaDatabase(self.route)
+        mydb.connect()
+        resultado = mydb.obtenerMeta(self.route.getId())
+        mydb.close()
+        
+        for dato in resultado:
+            item = CartaMeta(self.route,dato)
+            self.lvMeta.controls.append(item)
+        self.lvMeta.update()
+        
+        self.metasCumplidasText.value = resultado[0][3]
+        self.metasCumplidasText.update()
+        
+
+    
     def build(self):
         return self.index
     
     def inicializar(self):
+        self.cargarMeta()
         print('Inicializando Competencia')

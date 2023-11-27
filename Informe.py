@@ -101,13 +101,18 @@ class Informe(ft.UserControl):
             )
         )
         
-    def retrocederSemana(self,e):
+    def retrocederSemana(self, e):
         self.semanaAnteriorBoton.style = ft.ButtonStyle(color='green')
         self.semanaActualBoton.style = ft.ButtonStyle(color='black')
         self.semanaAnteriorBoton.disabled = True
         self.semanaActualBoton.disabled = False
-        dias_para_restar = (self.fechaActual.weekday() - 6) % 7
-        fecha_domingo = self.fechaActual - datetime.timedelta(days=dias_para_restar)
+        
+        if self.fechaActual.weekday() == 6:  # Si hoy es domingo
+            fecha_domingo = self.fechaActual - datetime.timedelta(days=7)
+        else:
+            dias_para_restar = (self.fechaActual.weekday() + 1) % 7  # Ajuste para obtener el domingo
+            fecha_domingo = self.fechaActual - datetime.timedelta(days=dias_para_restar)
+        
         self.fechaActual = fecha_domingo
         self.obtenerInfo()
         
@@ -116,6 +121,7 @@ class Informe(ft.UserControl):
         self.semanaActualBoton.style = ft.ButtonStyle(color='green')
         self.semanaAnteriorBoton.disabled = False
         self.semanaActualBoton.disabled = True
+        
         self.fechaActual = self.aux
         self.obtenerInfo()
         
