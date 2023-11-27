@@ -6,7 +6,7 @@ from Appbar import Appbar
 def main(page: ft.Page):
     
     page.title = 'MetaClr'
-    
+    page.icon = '/images/Logo3ICO.ico'
     routing = Router(page) 
     page.bgcolor = '#F2E8CF'
     page.window_width = 1200

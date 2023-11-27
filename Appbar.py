@@ -10,6 +10,7 @@ class Appbar(ft.UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
+        
         self.GRIS = '#252422'
         
         self.nickname = ft.Text(weight=ft.FontWeight.BOLD,color='black',text_align=ft.TextAlign.CENTER,expand=True)
@@ -17,9 +18,8 @@ class Appbar(ft.UserControl):
         self.scheduler = BlockingScheduler()
         self.scheduler.add_job(self.update_day, 'interval', seconds=1)
         
-        self.hour_text = ft.Text('', size=35, weight=ft.FontWeight.W_600,color='white')
+        self.hour_text = ft.Text('', size=15, weight=ft.FontWeight.W_600,color='white')
         self.day_text = ft.Text(size=20,weight=ft.FontWeight.W_600,color='white')
-        
     
         self.bar = ft.AppBar(
             # leading=ft.Icon(ft.icons.PALETTE),
@@ -39,13 +39,12 @@ class Appbar(ft.UserControl):
                 # ft.Icon(),
                 self.day_text,
                 self.hour_text,
-                ft.Icon(size=500),
+                ft.Icon(),
                 ft.IconButton(
                     icon=ft.icons.NOTIFICATIONS_OUTLINED,
                     icon_size=35,icon_color='white'
                 ),
-            
-            ft.Icon(size=5),
+           ft.Icon(size=5),
                 #Etiqueta con nombre de usuario
                 ft.Container(
                     expand=True,border_radius=ft.border_radius.all(20),
