@@ -1,6 +1,7 @@
 import flet as ft
-from Cartas import CartaIngrediente
-from Database import generalDatabaseAccess
+from Cartas import CartaPlatilloBuscador,CartaRegistroIngrediente,CartaPlatillos
+from Database import generalDatabaseAccess, FoodDatabase
+from Notification import Notification
 
 class CreadorPlatillos(ft.UserControl):
     def __init__(self, route):
@@ -9,17 +10,24 @@ class CreadorPlatillos(ft.UserControl):
         
         self.GRIS = '#252422'
         self.lvIngredientes = ft.ListView(expand=True,padding=20,auto_scroll=True)
+        self.lvPlatillos = ft.ListView(expand=True,padding=20,auto_scroll=True)
         self.listaIngredientes = []
-
-        self.crearButton = ft.ElevatedButton(text='Crear Platillo',
-                                    icon=ft.icons.CHECK,
-                                    style=ft.ButtonStyle(color ='white', bgcolor="#009E60"),
-                                    on_click=self.crearPlatillo)
+        
+        self.SearchList = ft.ListView(expand=1,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
+        
+        self.focused_color = '#26587E'
+        
+        self.crearButton = ft.ElevatedButton(
+            text='Crear Platillo',
+            icon=ft.icons.CHECK,
+            style=ft.ButtonStyle(color ='white', bgcolor="#009E60"),
+            on_click=self.registrarPlatillo
+        )
         
         self.limpiarButton = ft.ElevatedButton(text='Cancelar',
                                     icon=ft.icons.ARROW_BACK,
                                     style=ft.ButtonStyle(color ='white', bgcolor=ft.colors.RED_500),
-                                    on_click=self.cancelarPlatillo)
+                                    )
 
         self.SearchTextNombre = ft.TextField(
             label='Nombre del Platillo',
@@ -59,8 +67,9 @@ class CreadorPlatillos(ft.UserControl):
                 self.SearchTextDescripción,self.limpiarButton
             ], alignment= ft.MainAxisAlignment
         )
-
-        self.LabelsCarD = ft.Card(
+        
+        self.LabelsCarD = ft.Container(
+        ft.Card(
             key='tmba',
             content=ft.Container(
                 content=ft.Column(
@@ -80,10 +89,33 @@ class CreadorPlatillos(ft.UserControl):
             ),
             color='#43962c'
         )
+        )
 
-        self.botonRegistroEjercicio = ft.ElevatedButton(text='Registrar Ingrediente',
-                                                     icon=ft.icons.ADD,style=ft.ButtonStyle(color ='white', bgcolor="#009E60"),
-                                                     on_click=self.buscadorIngredientes)
+        self.botonRegistroEjercicio = ft.ElevatedButton(
+            text='Eliminar todos',
+            color ='white', bgcolor="red",
+            on_click=self.eliminarTodos
+            )
+
+        self.SearchButtom = ft.IconButton(
+            icon=ft.icons.SEARCH,
+            on_click=self.buscarElementos,
+            style=ft.ButtonStyle(
+                color="#26587E",
+                bgcolor="#E3E9F0"
+            )
+        )
+        
+        self.SearchText = ft.TextField(
+            label='Nombre de Alimento',
+            focused_color=self.focused_color,
+            text_style=ft.TextStyle(color=self.GRIS),
+            focused_border_color=self.GRIS,
+            label_style=ft.TextStyle(color=self.GRIS),
+            # expand=True,
+            color='white',
+            bgcolor='white'
+        )
 
         self.registroIngredientes = ft.Card(
             expand=True,key='registraIngredientes',
@@ -118,68 +150,178 @@ class CreadorPlatillos(ft.UserControl):
             ),
             color='#2AAA8A',
         )
-
+        
+        self.anadidos = ft.Card(
+            expand=True,
+            content=ft.Column(
+                expand=True,horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                controls=[
+                    ft.Container(
+                        padding=20,bgcolor=self.GRIS,border_radius=ft.border_radius.only(top_left=13,top_right=13),
+                        content=ft.Row(
+                            expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            controls=[
+                                ft.Container(
+                                    content=ft.Row(
+                                        controls=[
+                                            # ft.Icon(name=ft.icons.APPLE_ROUNDED,color='red',size=25),
+                                            ft.Text(value='Añadidos',weight='bold',size=25,bgcolor=self.GRIS)
+                                        ]
+                                    ),
+                                ),
+                                self.SearchText,
+                                self.SearchButtom
+                            ]
+                        )  
+                    ),
+                    self.SearchList
+                ]
+            ),
+            color='#2AAA8A',
+        )
+        
+        
+        self.contenedorDesc = ft.Container(
+            expand=True,
+            padding=10,
+            border_radius=ft.border_radius.all(12),
+            bgcolor=self.GRIS,
+            content=ft.Column(
+                expand=True,
+                controls=[
+                    self.SearchTextNombre,
+                    self.SearchTextDescripción,
+                    self.crearButton,
+                ]
+            )
+        )
+        
+        self.contenedorPlatillos = ft.Container(
+            expand=True,
+            padding=10,
+            border_radius=ft.border_radius.all(12),
+            bgcolor=self.GRIS,
+            content=ft.Column(
+                expand=True,
+                controls=[
+                    self.lvPlatillos
+                ]
+            )
+        )
+        
         
         self.mainContainer = ft.Container(
             expand=True,
             content=ft.Column(
                 expand=True,
                 controls=[
-                    self.LabelsCarD,
-                    self.registroIngredientes,
+                    ft.Container(
+                        expand=3,
+                        content=ft.Row(
+                            controls=[
+                                self.contenedorDesc,
+                                self.contenedorPlatillos,
+                            ]
+                        ),
+                    ),
+                    
+                    ft.Container(
+                        expand=5,
+                        content=ft.Row(
+                            controls=[
+                                self.registroIngredientes,
+                                self.anadidos,
+                            ]
+                        )
+                    ),
                 ]
             )
         )
-
-    def crearPlatillo(self,e):
+        
+    def eliminarTodos(self,e):
+        self.listaIngredientes.clear()
         self.lvIngredientes.clean()
-        mydb = generalDatabaseAccess(self.route)
-        mydb.connect()
-        newID = mydb.insertarRegistro("Platillo","(ID_Usuario, Nombre_platillo, Descripción)",
-                              "{},'{}','{}'".format(self.route.getId(),
-                                                    self.SearchTextNombre,
-                                                    self.SearchTextDescripción))
-
-        if  newID == None:
-            print("Sin_ID")
-            return
-
-        grandString = ""
-        for ingrediente in self.listaIngredientes:
-             grandString += "({},{}), ".format(newID,ingrediente[0])
-            
-        mydb.insertarRegistro("Relación_Alimento_Platillo",
-                               "(ID_Platillo,ID_Alimento,Cantidad)",
-                               "{}".format(grandString))
-
-        mydb.close()
-        self.listaIngredientes.remove()
-
-        self.cancelarPlatillo()
-
-    def cancelarPlatillo(self):
-        pass
-        
-    def buscadorIngredientes(self,e):
-        self.page.go('/buscador_ingredientes')
-        
-    def agregarIngredientes(self):
-        self.lvIngredientes.clean()
-        
-        i = 0
-        if self.listaIngredientes is not None:
-            for dataIngrediente in self.listaIngredientes:
-                item = CartaIngrediente(self.route,dataIngrediente,self.lvIngredientes,i)
-                self.lvIngredientes.controls.append(item)
-                i+=1
         self.lvIngredientes.update()
-        self.route.page.update()
         
+    def buscarElementos(self,e):
+        self.SearchList.clean()
+        mydb = FoodDatabase(self.route)
+        mydb.connect()
+        
+        if self.SearchText.value == '':
+            return
+            
+        dato = self.SearchText.value
+        resultado = mydb.ObtenerAlimentos(dato)
+        mydb.close()
+        
+        for datos in resultado:
+            item = CartaPlatilloBuscador(self.route,datos)
+            self.SearchList.controls.append(item)
+        self.SearchList.update()
+        
+    def anadirLista(self,datosDic):
+        
+        self.SearchList.clean()
+        self.SearchText.value = ''
+        self.listaIngredientes.append(datosDic)
+        item = CartaRegistroIngrediente(self.route,datosDic)
+        self.lvIngredientes.controls.append(item)
+        self.lvIngredientes.update()
+        
+        # print(self.listaIngredientes)
+        
+        
+        self.mainContainer.update()
+        
+    def establecer_Horario(self,string):
+        self.horario = string
+        print(self.horario)
+        
+    def registrarPlatillo(self,e):
+        total_kcal = 0
+        total_lipidos = 0
+        total_proteinas = 0
+        total_hidratos = 0
+        
+        for alimento in self.listaIngredientes:
+            total_kcal += alimento['kcal']
+            total_lipidos += alimento['lipidos']
+            total_proteinas += alimento['proteina']
+            total_hidratos += alimento['hidratos']
+        
+        mydb = FoodDatabase(self.route)
+        mydb.connect()
+        
+        datos = [self.route.getId(),self.SearchTextNombre.value,self.SearchTextDescripción.value,total_kcal]
+        
+        resultado = mydb.registrarPlatillo(datos,self.listaIngredientes)
+        
+        if resultado is not None:
+            Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
+            return
+        Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
+        self.route.page.go('/index')
+        
+
+    def cargarPlatillos(self):
+        self.lvPlatillos.clean()
+        mydb = FoodDatabase(self.route)
+        mydb.connect()
+        resultado = mydb.obtenerPlatillos(self.route.getId())
+        mydb.close()
+        
+        for datos in resultado:
+            item = CartaPlatillos(self.route,datos)
+            self.lvPlatillos.controls.append(item)
+        self.lvPlatillos.update()
+
     def build(self):
         return self.mainContainer
     
     def inicializar(self):
         # self.route.page.bgcolor = '#98FB98'
-        self.agregarIngredientes()
+        # self.agregarIngredientes()
+        self.cargarPlatillos()
         self.route.page.update()
         print('Inicializando Creador de Platillos')

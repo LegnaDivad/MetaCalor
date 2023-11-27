@@ -12,7 +12,7 @@ def main(page: ft.Page):
     page.window_width = 1200
     page.window_height = 800
     page.padding = 0
-    
+
     page.theme = ft.Theme(  
         scrollbar_theme=ft.ScrollbarTheme(
             main_axis_margin=10,
@@ -25,7 +25,7 @@ def main(page: ft.Page):
             interactive=True,
         )
     )
-    
+
     page.on_route_change = routing.route_change
     
     page.add(routing.body)
