@@ -67,31 +67,31 @@ class Login(UserControl):
             ),
         )
         
-    def generarMetas(self):
-        fecha_actual = datetime.datetime.now().strftime('%Y-%m-%d')
-        semana_actual = datetime.datetime.now().isocalendar()[1]
-        semana_actual = semana_actual + 1
-        mydb = MetaDatabase(self.route)
-        mydb.connect()
+    # def generarMetas(self):
+    #     fecha_actual = datetime.datetime.now().strftime('%Y-%m-%d')
+    #     semana_actual = datetime.datetime.now().isocalendar()[1]
+    #     semana_actual = semana_actual + 1
+    #     mydb = MetaDatabase(self.route)
+    #     mydb.connect()
         
-        # resultado = mydb.verificarMeta(fecha_actual,self.route.getId(),'Diaria')
+    #     # resultado = mydb.verificarMeta(fecha_actual,self.route.getId(),'Diaria')
         
-        # if not resultado:
-        #     mydb = MetaDatabase(self.route)
-        #     mydb.connect()
-        #     datos = [self.route.getId(),1,fecha_actual,0.0]
-        #     datos2 = [self.route.getId(),2,fecha_actual,0.0]
-        #     mydb.registraMeta(datos)
-        #     mydb.registraMeta(datos2)
+    #     # if not resultado:
+    #     #     mydb = MetaDatabase(self.route)
+    #     #     mydb.connect()
+    #     #     datos = [self.route.getId(),1,fecha_actual,0.0]
+    #     #     datos2 = [self.route.getId(),2,fecha_actual,0.0]
+    #     #     mydb.registraMeta(datos)
+    #     #     mydb.registraMeta(datos2)
             
-        resultado = mydb.verificarMetaSemanal(semana_actual,self.route.getId(),'Semanal')
+    #     resultado = mydb.verificarMetaSemanal(semana_actual,self.route.getId(),'Semanal')
         
-        if not resultado:
-            datos = [self.route.getId(),4,fecha_actual,0.0]
-            datos2 = [self.route.getId(),5,fecha_actual,0.0]
-            mydb.registraMeta(datos)
-            mydb.registraMeta(datos2)
-        mydb.close()
+    #     if not resultado:
+    #         datos = [self.route.getId(),4,fecha_actual,0.0]
+    #         datos2 = [self.route.getId(),5,fecha_actual,0.0]
+    #         mydb.registraMeta(datos)
+    #         mydb.registraMeta(datos2)
+    #     mydb.close()
         
     def IniciarIndex(self,resultado):
         self.route.setLogInfo(resultado)
@@ -99,7 +99,7 @@ class Login(UserControl):
         self.route.page.appbar.visible = True
         self.route.bar.set_Nickname(resultado[0])
         self.route.competencia.set_Datos(resultado)
-        self.generarMetas()
+        # self.generarMetas()
         self.route.menu.update()
         self.route.page.update()
         self.page.go('/index')
