@@ -46,6 +46,11 @@ class SideMenu(ft.UserControl):
                     label_content=ft.Text("Registro de Ejercicios",color='black'),
                 ),
                 ft.NavigationRailDestination(
+                    icon_content=ft.Icon(ft.icons.FASTFOOD_SHARP,color='black'),
+                    selected_icon_content=ft.Icon(ft.icons.FASTFOOD_SHARP),
+                    label_content=ft.Text("Crea tus Platillos",color='black'),
+                ),
+                ft.NavigationRailDestination(
                     icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP,color='black'),
                     selected_icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP),
                     label_content=ft.Text("Competencia",color='black'),
@@ -65,13 +70,18 @@ class SideMenu(ft.UserControl):
             self.route.page.update()
             self.update()
             return
-        # elif e.control.selected_index == 2:
-        #     self.route.page.go('/ejercicio')
-        #     self.route.page.update()
-        #     self.update()
-        #     return
-        elif e.control.selected_index == 3:
+        elif e.control.selected_index == 2:
+             self.route.page.go('/registro_ejercicios')
+             self.route.page.update()
+             self.update()
+             return
+        elif e.control.selected_index == 4:
             self.route.page.go('/competencia')
+            self.route.page.update()
+            self.update()
+            return
+        elif e.control.selected_index == 3:
+            self.route.page.go('/crear_platillo')
             self.route.page.update()
             self.update()
             return
