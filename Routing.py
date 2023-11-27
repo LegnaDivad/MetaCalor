@@ -1,4 +1,5 @@
 import flet as ft
+from datetime import datetime
 from SideMenu import SideMenu
 # from Index import Index
 from IndexNuevo import Index
@@ -8,8 +9,11 @@ from Informe import Informe
 from Login import Login
 from Registro import Register
 from Search import Search
-from Perfil import Perfil
-import datetime
+from Registro_Ejercicio import RegistroEjercicios
+from SearchEjercicios import SearchEjercicios
+from CrearPlatillo import CreadorPlatillos
+from SearchPlatillos import SearchPlatillos
+from SearchIngredientes import SearchIngredientes
 
 class Router:
     def __init__(self,page: ft.Page):
@@ -21,10 +25,17 @@ class Router:
         self.login = Login(self)
         self.registro = Register(self)
         self.buscador = Search(self)
-        self.perfil = Perfil(self)
+        self.registroEjercicios = RegistroEjercicios(self)
+        self.buscadorEjercicios = SearchEjercicios(self)
+        self.crearPlatillo = CreadorPlatillos(self)
+        self.buscadorPlatillos = SearchPlatillos(self)
+        self.buscadorIngredientes = SearchIngredientes(self)
         
         self.idLogin = None
-        # self.fechaActual = datetime.datetime.today().strftime(f"%Y-%m-%d")
+
+        fechaActual = datetime.now()
+        fechaYYYYMMMDD = fechaActual.strftime("%Y:%m:%d")
+        self.fechaHoy = fechaYYYYMMMDD
         
         self.routes = {
             '/' : self.login,
@@ -33,7 +44,11 @@ class Router:
             '/informe' : self.informe,
             '/competencia' : self.competencia,
             '/buscador' : self.buscador,
-            '/perfil' : self.perfil
+            '/registro_ejercicios' : self.registroEjercicios,
+            '/buscador_ejercicios' : self.buscadorEjercicios,
+            '/crear_platillo' : self.crearPlatillo,
+            '/buscador_platillos':self.buscadorPlatillos,
+            '/buscador_ingredientes':self.buscadorIngredientes
         }
         
         self.llamada = {
@@ -43,7 +58,11 @@ class Router:
             '/informe' : self.informe.inicializar,
             '/competencia' : self.competencia.inicializar,
             '/buscador' : self.buscador.inicializar,
-            '/perfil' : self.perfil.inicializar,
+            '/registro_ejercicios' : self.registroEjercicios.inicializar,
+            '/buscador_ejercicios' : self.buscadorEjercicios.inicializar,
+            '/crear_platillo' : self.crearPlatillo.inicializar,
+            '/buscador_platillos':self.buscadorPlatillos.inicializar,
+            '/buscador_ingredientes':self.buscadorIngredientes.inicializar
         }
         
         self.menu = SideMenu(self)
@@ -66,6 +85,9 @@ class Router:
         
     def getId(self):
         return self.idLogin
+    
+    def getFecha(self):
+        return self.fechaHoy
 
     def Logout(self):
         self.idLogin = None
