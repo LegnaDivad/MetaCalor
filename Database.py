@@ -2,22 +2,22 @@ import mysql.connector
 import datetime
 
 class Config:
-    def connect(self):
-        self.connection = mysql.connector.connect(
-            host = 'localhost',
-            user = 'root',
-            password = '',
-            port = '3306'
-        )
-        
     # def connect(self):
     #     self.connection = mysql.connector.connect(
-    #         host = '137.184.234.157',
-    #         user = 'metaclrlng23',
-    #         password = 'Clr23BX',
-    #         database = 'metaclr',
+    #         host = 'localhost',
+    #         user = 'root',
+    #         password = '',
     #         port = '3306'
     #     )
+        
+    def connect(self):
+        self.connection = mysql.connector.connect(
+            host = '137.184.234.157',
+            user = 'metaclrlng23',
+            password = 'Clr23BX',
+            database = 'metaclr',
+            port = '3306'
+        )
         
     def close(self):
         self.connection.close()
@@ -122,6 +122,16 @@ class FoodDatabase(Config):
         cursor.execute(sql, (f'%{dato}%',))
         return cursor.fetchall()
     
+    def obtenerPlatillos(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT ID_Platillo,ID_Usuario,Nombre_Platillo,Total_Kcal
+        FROM Platillo
+        WHERE ID_Usuario = %s'''
+        cursor.execute(sql, (id,))
+        return cursor.fetchall()
+    
     def registrarAlimentoDia(self,datos):
         use = 'USE metaclr'
         camposTabla = ('ID_Usuario,ID_Alimento,Fecha_registro,Total_calorias,Total_lipidos,Total_hidratos,Total_proteinas,horario')
@@ -133,6 +143,70 @@ class FoodDatabase(Config):
         self.connection.commit()
         # return 'introducido'
         return not None
+    
+    def obtenerAlimentosPlatillosRegistro(self,id,idPlatillo):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT AP.ID_Alimento,AP.Total_Energia_Kcal,AP.Total_Proteina_G,AP.Total_Lipidos_G,AP.Total_Hidratos_de_carbono_G
+        FROM Relación_Alimento_Platillo AP
+        JOIN Platillo P ON P.ID_Platillo = AP.ID_Platillo
+        WHERE P.ID_Usuario = %s AND P.ID_Platillo = %s'''
+        cursor.execute(sql, (id,idPlatillo,))
+        return cursor.fetchall()
+    
+    def registrarPlatillo(self,datos,diccionario):
+        use = 'USE metaclr'
+        camposTabla = ('ID_Usuario,Nombre_Platillo,Descripción,Total_Kcal')
+        qntd = ('%s, %s, %s, %s')
+        sql = f'INSERT INTO Platillo({camposTabla}) VALUES ({qntd})'
+        cursor = self.connection.cursor()
+        cursor.execute(use)
+        cursor.execute(sql,datos)
+        
+        last_platillo_id = cursor.lastrowid
+
+        camposAlimentos = ('ID_Platillo, ID_Alimento, Total_Energia_Kcal, Total_Proteina_g, Total_Lipidos_G, Total_Hidratos_de_carbono_G')
+        qntd = ('%s, %s, %s, %s, %s, %s')
+        sql_alimentos = f'INSERT INTO Relación_Alimento_Platillo({camposAlimentos}) VALUES ({qntd})'
+
+        for datos_alimento in diccionario:
+            valores_alimento = (
+                last_platillo_id,  # ID_Platillo es el mismo para todos los alimentos
+                datos_alimento['idAlimento'],
+                datos_alimento['kcal'],
+                datos_alimento['proteina'],
+                datos_alimento['lipidos'],
+                datos_alimento['hidratos'],
+            )
+            
+            cursor.execute(sql_alimentos, valores_alimento)
+        self.connection.commit()
+        return None
+        
+    def registrarPlatilloAlimentoDia(self,datos):
+        use = 'USE metaclr'
+        camposTabla = ('ID_Usuario,ID_Alimento,Fecha_registro,Total_calorias,Total_lipidos,Total_hidratos,Total_proteinas,horario')
+        qntd = ('%s, %s, %s, %s, %s, %s, %s, %s')
+        sql = f'INSERT INTO Registro_Alimentos({camposTabla}) VALUES ({qntd})'
+        cursor = self.connection.cursor()
+        cursor.execute(use)
+        cursor.execute(sql,datos)
+        self.connection.commit()
+        # return 'introducido'
+        return not None
+    
+    # def registrarAlimentosPlatillo(self,idPlatillo,):
+    #     use = 'USE metaclr'
+    #     camposTabla = ('ID_Platillo,ID_Usuario')
+    #     qntd = ('%s, %s, %s, %s, %s, %s, %s, %s')
+    #     sql = f'INSERT INTO Registro_Alimentos({camposTabla}) VALUES ({qntd})'
+    #     cursor = self.connection.cursor()
+    #     cursor.execute(use)
+    #     cursor.execute(sql,datos)
+    #     self.connection.commit()
+    #     # return 'introducido'
+    #     return not None
         
 class generalDatabaseAccess(Config):
     def __init__(self,route) -> None:

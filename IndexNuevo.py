@@ -89,7 +89,7 @@ class Index(ft.UserControl):
                                             ),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/crear_platillo')),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='desayuno',on_click=self.tomarHorarioPlatillo),
                                                     ft.Text('Registrar Platillo',color='white')
                                                 ]
                                             ),
@@ -138,7 +138,7 @@ class Index(ft.UserControl):
                                             ),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador')),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='almuerzo',on_click=self.tomarHorarioPlatillo),
                                                     ft.Text('Registrar Platillo',color='white')
                                                 ]
                                             ),
@@ -184,7 +184,7 @@ class Index(ft.UserControl):
                                             ),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador')),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='cena',on_click=self.tomarHorarioPlatillo),
                                                     ft.Text('Registrar Platillo',color='white')
                                                 ]
                                             ),
@@ -308,6 +308,10 @@ class Index(ft.UserControl):
         self.fechaActual = fecha_siguiente.strftime(f"%Y-%m-%d")
         print(self.fechaActual)
         self.inicializar()
+        
+    def tomarHorarioPlatillo(self,e):
+        self.route.crearPlatillo.establecer_Horario(e.control.key)
+        self.page.go('/crear_platillo')
         
     def tomarHorario(self,e):
         self.route.buscador.establecer_Horario(e.control.key)
