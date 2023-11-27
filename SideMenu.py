@@ -65,11 +65,11 @@ class SideMenu(ft.UserControl):
             self.route.page.update()
             self.update()
             return
-        # elif e.control.selected_index == 2:
-        #     self.route.page.go('/ejercicio')
-        #     self.route.page.update()
-        #     self.update()
-        #     return
+        elif e.control.selected_index == 2:
+            self.route.page.go('/registro_ejercicios')
+            self.route.page.update()
+            self.update()
+            return
         elif e.control.selected_index == 3:
             self.route.page.go('/competencia')
             self.route.page.update()

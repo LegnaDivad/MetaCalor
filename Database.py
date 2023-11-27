@@ -2,21 +2,22 @@ import mysql.connector
 import datetime
 
 class Config:
+    # def connect(self):
+        # self.connection = mysql.connector.connect(
+        #     host = 'localhost',
+        #     user = 'root',
+        #     password = '',
+        #     port = '3306'
+        # )
+        
     def connect(self):
         self.connection = mysql.connector.connect(
-            host = 'localhost',
-            user = 'root',
-            password = '',
+            host = '137.184.234.157',
+            user = 'metaclrlng23',
+            password = 'Clr23BX',
+            database = 'metaclr',
             port = '3306'
         )
-    # def connect(self):
-    #     self.connection = mysql.connector.connect(
-    #         host = '137.184.234.157',
-    #         user = 'metaclrlng23',
-    #         password = 'Clr23BX',
-    #         database = 'metaclr',
-    #         port = '3306'
-    #     )
         
     def close(self):
         self.connection.close()
@@ -37,16 +38,6 @@ class UserDatabase(Config):
         cursor.execute(use)
         cursor.execute(sql_usuario,datos)
         self.connection.commit()
-
-        # ultimo_id_usuario = cursor.lastrowid
-        # fecha_actual = datetime.datetime.now().strftime('%Y-%m-%d')
-        # metas_a_insertar = [
-        #     {'ID_Meta': 4, 'Progreso': 0.0},
-        #     {'ID_Meta': 5, 'Progreso': 0.0}
-        # ]
-        # for meta in metas_a_insertar:
-        #     cursor.execute(sql_insert_usuario_metas, (ultimo_id_usuario, meta['ID_Meta'], fecha_actual, meta['Progreso']))
-        #     self.connection.commit()
         return not None
     
     def datosUsuario(self,id):
@@ -175,6 +166,8 @@ class generalDatabaseAccess(Config):
         except Exception as e:
             self.connection.rollback()
             print(f"Error al insertar registro/s: {e}")
+            
+        return not None
     
     def modificarRegistro(self, tabla_from, sentencia_set, condiciones_where):
         try:
@@ -186,6 +179,9 @@ class generalDatabaseAccess(Config):
         except Exception as e:
             self.connection.rollback()
             print(f"Error al modificar registro: {e}")
+            return None
+        
+        return None
     
     def eliminarRegistro(self, tabla_from, condiciones_where, cantidad=0):
         try:
@@ -197,6 +193,7 @@ class generalDatabaseAccess(Config):
         except Exception as e:
             self.connection.rollback()
             print(f"Error al recuperar registros: {e}")
+            return None
 
 class MetaDatabase(Config):
     def __init__(self,route) -> None:
@@ -317,3 +314,65 @@ class MetaDatabase(Config):
         '''
         cursor.execute(sql, (id,idMeta,fecha))
         return cursor.fetchone()
+    
+class EjerciciosDatabase(Config):
+    def __init__(self,route) -> None:
+        super().__init__()
+        self.route = route
+    
+    def ObtenerEjercicios(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT A.Tipo_Act,A.ID_AF,AU.Duración_Act,AU.Fecha_Registro,AU.ID_RegDeAct
+        FROM Actividad_Física A
+        JOIN Registro_Actividad_Física AU ON AU.ID_AF = A.ID_AF
+        WHERE AU.ID_Usuario = %s''' 
+        cursor.execute(sql, (id,))
+        return cursor.fetchall()
+    
+    def registrarEjercicios(self,datos):
+        use = 'USE metaclr'
+        camposTabla = ('ID_Usuario,ID_AF,Fecha_Registro,Duración_Act')
+        qntd = ('%s, %s, %s, %s')
+        sql = f'INSERT INTO Registro_Actividad_Física({camposTabla}) VALUES ({qntd})'
+        cursor = self.connection.cursor()
+        cursor.execute(use)
+        cursor.execute(sql,datos)
+        self.connection.commit()
+        # return 'introducido'
+        return not None
+    
+    def mostrarEjercicios(self):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT Tipo_Act,ID_AF,MET
+        FROM Actividad_Física''' 
+        cursor.execute(sql)
+        return cursor.fetchall()
+    
+    def eliminarRegistroAlimento(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''DELETE FROM Registro_Actividad_Física
+        WHERE ID_RegDeAct = %s
+        '''
+        cursor.execute(sql,(id,))
+        self.connection.commit()
+        return 'Eliminado'
+    
+    def modificarRegistro(self,hora,id):
+        use = 'USE metaclr'
+        # camposTabla = ('ID_Usuario,ID_AF,Fecha_Registro,Duración_Act')
+        # qntd = ('%s, %s, %s, %s')
+        sql = '''UPDATE Registro_Actividad_Física
+        SET Duración_Act = %s
+        WHERE ID_RegDeAct = %s
+        '''
+        cursor = self.connection.cursor()
+        cursor.execute(use)
+        cursor.execute(sql,(hora,id))
+        self.connection.commit()
+        return not None

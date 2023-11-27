@@ -89,7 +89,7 @@ class Index(ft.UserControl):
                                             ),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador')),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/crear_platillo')),
                                                     ft.Text('Registrar Platillo',color='white')
                                                 ]
                                             ),
