@@ -375,3 +375,309 @@ class CartaMeta(ft.UserControl):
         
     def build(self):
         return self.metasContenedor
+
+
+class CartaIngrediente(CartaRegistroAlimento):
+    def __init__(self,route,datos,list,pos):
+        super().__init__(route,datos)
+        self.pos = pos
+        self.lista = list
+        
+    def eliminarAlimento(self,e):
+        self.lista.pop(self.pos)
+        self.route.index.agregarComidas()
+        self.route.page.update()
+
+class CartaIngredienteBuscador(CartaBuscador):
+    def __init__(self,route,datos, listIngredientes):
+        super().__init__(route,datos)
+        self.lista = listIngredientes
+
+    def registrarAlimento(self,e):
+        if self.valido:
+            datos = "{},{}".format(self.dato[9], self.valido)
+
+            self.lista.append(datos)
+            print(self.lista)
+            if datos is None:
+                Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
+                return
+            self.route.page.go('/crear_platillo')
+        else:
+            Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
+        
+class CartaPlatillo(ft.UserControl):
+    def __init__(self,route,datos):
+        self.route = route
+        self.datos =datos
+        self.listaDatos = []
+        self.horario = self.route.buscador.horario
+
+        self.nombre = ft.Text("{}".format(datos[0]))
+
+        mydb = generalDatabaseAccess(self.route)
+        mydb.connect()
+
+        resultado = mydb.recuperarRegistro("A.Alimento, A.Categoria, A.Unidad,Cantidad, A.Energia_kcal, A.Proteina_g, A.Lipidos_g, A.Hidratos_de_carbono_g, A.Peso_bruto_g, A.ID_Alimento R.Cantidad",
+                                           "Alimentos AS A, Relación_Alimento_Platillo AS R",
+                                           "R.ID_Platillo = {} AND R.ID_Platillo = {} AND A.ID_Alimento = R.ID_Alimento".format(self.datos[1], self.datos[2]))
+        
+        self.lista = ft.ListView(expand=True,padding=5,auto_scroll=True)
+        
+        mydb.close()
+        self.cuentaCalorias = 0
+        for datos in resultado:
+            self.calcular_nutrientes(datos)
+            self.cuentaCalorias += self.listaDatos[-1][3]
+            item = ft.Card(
+                content=ft.Container(
+                padding=5,height=70,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            content=ft.Row(
+                                expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                controls=[
+                                    ft.Row(
+                                        controls=[
+                                            ft.Text("{}".format(datos[0])),
+                                            ft.Text("Cantidad: {}".format(datos[3])),
+                                            ft.Text("KiloCalorias: {}".format(self.listaDatos[-1][3]))
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color='#4D4D4D'
+            )
+            self.lista.controls.append(item)
+
+        self.content = ft.Container(
+            content=ft.Column(
+                controls=[
+                    self.nombre,
+                    self.lista
+                ]
+            )
+        )
+
+        self.calorias = ft.Text("Total Kilocalorias: {}".format(self.cuentaCalorias))
+        self.BotonAgregar = ft.IconButton(icon=ft.icons.APPLE,icon_color='GREEN',icon_size=30,on_click=self.boton_verIngredientes)
+
+
+        self.carta = ft.Card(
+            content= ft.Container(
+                padding=10,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            content=ft.Row(
+                                expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                controls=[
+                                    ft.Row(
+                                        controls=[
+                                            self.nombre,
+                                            self.calorias,
+                                        ]
+                                    ),
+                                    ft.Row(
+                                        controls=[
+                                            self.BotonAgregar
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color="#4D4D4D"
+        )
+
+    def calcular_nutrientes(self, data):
+        idUsuario = self.route.getId()
+        # fecha = datetime.datetime.today().strftime(f"%Y-%m-%d")
+        fecha = self.route.index.fechaActual
+        
+
+        energia_por_cantidad = data[4]
+        proteina_por_cantidad = data[5]
+        lipidos_por_cantidad = data[6]
+        hidratos_por_cantidad = data[7]
+        
+        print(data[11])
+        factor_conversion = data[11] / data[3]
+
+        calorias = round(factor_conversion * energia_por_cantidad,2)
+        proteinas = round(factor_conversion * proteina_por_cantidad,2)
+        lipidos = round(factor_conversion * lipidos_por_cantidad,2)
+        hidratos = round(factor_conversion * hidratos_por_cantidad,2)
+
+        datos = [idUsuario, data[9], fecha, calorias,lipidos,hidratos,proteinas,self.horario]
+
+        self.listaDatos.append(datos)
+        
+    
+    def boton_verIngredientes(self,e):
+        dialog = PlatilloDialog(self.content, "Información del Platillo")
+        dialog.data = e.control.data
+        self.route.page.dialog = dialog
+        dialog.open = True
+        self.route.page.update()
+        
+    def build(self):
+        return self.carta
+    
+
+class CartaPlatilloBuscador(ft.UserControl):
+    def __init__(self,route,datos):
+        self.route = route
+        self.datos =datos
+        self.listaDatos = []
+
+        self.nombre = ft.Text("{}".format(datos[0]))
+
+        mydb = generalDatabaseAccess(self.route)
+        mydb.connect()
+
+        resultado = mydb.recuperarRegistro("A.Alimento, A.Categoria, A.Unidad,Cantidad, A.Energia_kcal, A.Proteina_g, A.Lipidos_g, A.Hidratos_de_carbono_g, A.Peso_bruto_g, A.ID_Alimento R.Cantidad",
+                                           "Alimentos AS A, Relación_Alimento_Platillo AS R",
+                                           "R.ID_Platillo = {} AND R.ID_Platillo = {} AND A.ID_Alimento = R.ID_Alimento".format(self.datos[1], self.datos[2]))
+        
+        self.lista = ft.ListView(expand=True,padding=5,auto_scroll=True)
+        
+        mydb.close()
+        self.cuentaCalorias = 0
+        for datos in resultado:
+            self.calcular_nutrientes(datos)
+            self.cuentaCalorias += self.listaDatos[-1][3]
+            item = ft.Card(
+                content=ft.Container(
+                padding=5,height=70,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            content=ft.Row(
+                                expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                controls=[
+                                    ft.Row(
+                                        controls=[
+                                            ft.Text("{}".format(datos[0])),
+                                            ft.Text("Cantidad: {}".format(datos[3])),
+                                            ft.Text("KiloCalorias: {}".format(self.listaDatos[-1][3]))
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color='#4D4D4D'
+            )
+            self.lista.controls.append(item)
+
+        self.content = ft.Container(
+            content=ft.Column(
+                controls=[
+                    self.nombre,
+                    self.lista
+                ]
+            )
+        )
+
+        self.calorias = ft.Text("Total Kilocalorias: {}".format(self.cuentaCalorias))
+        self.BotonAgregar = ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30,on_click=self.boton_agregar)
+    
+
+        self.carta = ft.Card(
+            content= ft.Container(
+                padding=10,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            content=ft.Row(
+                                expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                controls=[
+                                    ft.Row(
+                                        controls=[
+                                            self.nombre,
+                                            self.calorias,
+                                        ]
+                                    ),
+                                    ft.Row(
+                                        controls=[
+                                            self.BotonAgregar
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color="#4D4D4D"
+        )
+
+    def calcular_nutrientes(self, data):
+        idUsuario = self.route.getId()
+        # fecha = datetime.datetime.today().strftime(f"%Y-%m-%d")
+        fecha = self.route.index.fechaActual
+
+        energia_por_cantidad = data[4]
+        proteina_por_cantidad = data[5]
+        lipidos_por_cantidad = data[6]
+        hidratos_por_cantidad = data[7]
+        
+        print(data[11])
+        factor_conversion = data[11] / data[3]
+
+        calorias = round(factor_conversion * energia_por_cantidad,2)
+        proteinas = round(factor_conversion * proteina_por_cantidad,2)
+        lipidos = round(factor_conversion * lipidos_por_cantidad,2)
+        hidratos = round(factor_conversion * hidratos_por_cantidad,2)
+
+        datos = [idUsuario, data[9], fecha, calorias,lipidos,hidratos,proteinas]
+
+        self.listaDatos.append(datos)
+        
+    
+    def boton_agregar(self,e):
+        dialog = RegisterDialog(self.registrarAlimento,self.content, "Información del Platillo")
+        dialog.data = e.control.data
+        self.route.page.dialog = dialog
+        dialog.open = True
+        self.route.page.update()
+
+    def registrarAlimento(self,e):
+        
+        ladb = generalDatabaseAccess(self.route)
+        ladb.connect()
+
+        ladb.insertarRegistro("Registro_Platillo", "", "({},{}),{}".format(self.datos[0],self.datos[1],self.datos[2]))
+        ladb.close()
+
+        mydb = FoodDatabase(self.route)
+        mydb.connect()
+
+        resultado = not None
+
+        for data in self.listaDatos:
+            resultado = mydb.registrarAlimentoDia(data)
+            if resultado == None:
+                break
+                
+        mydb.close()
+        if resultado is None:
+                Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
+                return
+        
+    def build(self):
+        return self.carta
