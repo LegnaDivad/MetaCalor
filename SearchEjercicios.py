@@ -1,5 +1,5 @@
 import flet as ft
-from Database import generalDatabaseAccess
+from Database import generalDatabaseAccess, EjerciciosDatabase
 from Cartas import CartaBuscadorEjercicios
 
 class SearchEjercicios(ft.UserControl):
@@ -76,21 +76,15 @@ class SearchEjercicios(ft.UserControl):
     def buscarTodo(self):
         self.SearchList.clean() 
 
-        mydb = generalDatabaseAccess(self.route)
+        mydb = EjerciciosDatabase(self.route)
         mydb.connect()
-        resultado = mydb.recuperarRegistro("Tipo_Act, ID_AF","Actividad_Física AS A","1")
-        resultado2 = mydb.recuperarRegistro("Tipo_Act ID_AF","Actividad_Física AS A","A.ID_Usuario = {}".format(self.route.getId()))
-        mydb.close()
+        resultado = mydb.mostrarEjercicios()
         
         for datos in resultado:
             item = CartaBuscadorEjercicios(self.route,datos)
             self.SearchList.controls.append(item)
         self.SearchList.update()
 
-        for datos in resultado2:
-            item = CartaBuscadorEjercicios(self.route,datos)
-            self.SearchList.controls.append(item)
-        self.SearchList.update()
         
     def build(self):
         return self.buscadorGUI

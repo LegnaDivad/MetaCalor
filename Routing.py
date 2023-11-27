@@ -1,7 +1,5 @@
 import flet as ft
-from datetime import datetime
 from SideMenu import SideMenu
-# from Index import Index
 from IndexNuevo import Index
 from Appbar import Appbar
 from Competencia import Competencia
@@ -9,6 +7,8 @@ from Informe import Informe
 from Login import Login
 from Registro import Register
 from Search import Search
+from Perfil import Perfil
+from datetime import datetime
 from Registro_Ejercicio import RegistroEjercicios
 from SearchEjercicios import SearchEjercicios
 from CrearPlatillo import CreadorPlatillos
@@ -25,6 +25,7 @@ class Router:
         self.login = Login(self)
         self.registro = Register(self)
         self.buscador = Search(self)
+        self.perfil = Perfil(self)
         self.registroEjercicios = RegistroEjercicios(self)
         self.buscadorEjercicios = SearchEjercicios(self)
         self.crearPlatillo = CreadorPlatillos(self)
@@ -32,7 +33,6 @@ class Router:
         self.buscadorIngredientes = SearchIngredientes(self)
         
         self.idLogin = None
-
         fechaActual = datetime.now()
         fechaYYYYMMMDD = fechaActual.strftime("%Y:%m:%d")
         self.fechaHoy = fechaYYYYMMMDD
@@ -44,6 +44,7 @@ class Router:
             '/informe' : self.informe,
             '/competencia' : self.competencia,
             '/buscador' : self.buscador,
+            '/perfil' : self.perfil,
             '/registro_ejercicios' : self.registroEjercicios,
             '/buscador_ejercicios' : self.buscadorEjercicios,
             '/crear_platillo' : self.crearPlatillo,
@@ -58,6 +59,7 @@ class Router:
             '/informe' : self.informe.inicializar,
             '/competencia' : self.competencia.inicializar,
             '/buscador' : self.buscador.inicializar,
+            '/perfil' : self.perfil.inicializar,
             '/registro_ejercicios' : self.registroEjercicios.inicializar,
             '/buscador_ejercicios' : self.buscadorEjercicios.inicializar,
             '/crear_platillo' : self.crearPlatillo.inicializar,
@@ -85,12 +87,12 @@ class Router:
         
     def getId(self):
         return self.idLogin
-    
-    def getFecha(self):
-        return self.fechaHoy
 
     def Logout(self):
         self.idLogin = None
+        
+    def getFecha(self):
+        return self.fechaHoy
         
     def route_change(self,e):
         self.container.content = self.routes[e.route]

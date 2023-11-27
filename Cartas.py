@@ -5,7 +5,7 @@ from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 from Notification import Notification
 from AlertDialog import *
-from Database import FoodDatabase, UserDatabase, MetaDatabase
+from Database import FoodDatabase, UserDatabase, MetaDatabase, generalDatabaseAccess, EjerciciosDatabase
 import datetime
 import decimal
 
@@ -375,14 +375,329 @@ class CartaMeta(ft.UserControl):
         
     def build(self):
         return self.metasContenedor
+    
+class CartaRegistroEjercicios(ft.UserControl):
+    def __init__(self,route,datos):
+        super().__init__()
+        self.route = route
+        self.datos = datos
 
+        self.valido = False
+        self.GRIS = '#252422'
 
+        self.botonModificar = ft.IconButton(icon=ft.icons.EDIT,icon_color='blue',on_click=self.boton_actualizar_accion)
+        self.botonEliminar = ft.IconButton(icon=ft.icons.DELETE_OUTLINE,icon_color='red', on_click=self.boton_eliminar_accion)
+
+        self.nombre = ft.Text(value=f"Ejercicio: {datos[0]}")
+
+        horas = datos[2].seconds // 3600
+        minutos = (datos[2].seconds % 3600) // 60
+        self.cantidadDisplay = ft.Text(value=f'Tiempo: {horas}:{minutos}',text_align='center',color='white')
+
+        self.cantidadDato = ft.TextField(value="0:0",label='Tiempo: HH:MM',on_submit=self.convertir_TIME)
+        self.nuevaDuracion = datetime.time(0,0,0)
+        
+        self.hora = ft.TextField(
+            label='Hora',
+            expand=1,
+            on_change=self.confirmarHora,
+            input_filter=ft.InputFilter(
+                regex_string=r"[0-9]", 
+                replacement_string=""
+            ),
+        )
+        
+        self.minuto = ft.TextField(
+            label='Minuto',
+            expand=1,
+            on_change=self.confirmarMinuto,
+            input_filter=ft.InputFilter(
+                regex_string=r"[0-9]", 
+                replacement_string=""
+            ),
+        )
+        
+        self.dialogContent = ft.Container(
+            content=ft.ResponsiveRow(
+                controls=[
+                    ft.Row(
+                        controls=[
+                            self.hora,
+                            ft.Text(':'),
+                            self.minuto,
+                        ]
+                    ),
+                ]
+            ),
+        )
+
+        self.carta = ft.Card(
+            content=ft.Container(
+                padding=10,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            content=ft.Row(
+                                expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                controls=[
+                                    ft.Row(
+                                        controls=[
+                                            self.nombre,
+                                            self.cantidadDisplay
+                                        ]
+                                    ),
+                                    ft.Row(
+                                        controls=[
+                                            self.botonModificar,
+                                            self.botonEliminar
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color=self.GRIS
+        )
+
+    def convertir_TIME(self, e):
+        try:
+            print(self.cantidadDato.value)
+            stringHora = str(self.cantidadDato.value)
+            partes_hora = stringHora.split(":")
+            hora = int(partes_hora[0])
+            minutos = int(partes_hora[1])
+        except (decimal.InvalidOperation, ValueError):
+            print("El valor ingresado es Inválido")
+            self.cantidadDato.value = 0 
+            self.cantidadDato.update()
+            return None
+
+        if hora < 0 or minutos < 0:
+            print('No se Admiten Números Negativos')
+            self.cantidadDato.value = 0
+            self.cantidadDato.update()
+            return None
+
+        print(hora, minutos, stringHora)
+        self.nuevaDuracion = datetime.time(hora, minutos, 0)
+
+    def boton_eliminar_accion(self, e):
+        print(self.datos[4])
+        dialog = EliminacionDialog(self.eliminarEjercicio, "¿Seguro de Querer Eliminar el Ejercicio?")
+        dialog.data = e.control.data
+        self.route.page.dialog = dialog
+        dialog.open = True
+        self.route.page.update()
+
+    def eliminarEjercicio(self,e):
+        mydb = EjerciciosDatabase(self.route)
+        mydb.connect()
+        mydb.eliminarRegistroAlimento(self.datos[4])
+        
+        Notification(self.page,'Ejercicio Eliminado con Éxito!','green').mostrar_msg()
+        mydb.close()
+        self.route.registroEjercicios.inicializar()
+
+    def boton_actualizar_accion(self, e):
+        dialog = ActualizacionDialog(self.actualizarEjercicio,self.dialogContent,"Ingrese la Nueva Duración del Ejercicio")
+        dialog.data = e.control.data
+        self.route.page.dialog = dialog
+        dialog.open = True
+        self.route.page.update()
+
+    def actualizarEjercicio(self,e):
+        if self.valido:
+            nueva_hora = datetime.time(self.hora.value,self.minuto.value)
+            mydb = EjerciciosDatabase(self.route)
+            print(self.datos[4])
+            mydb.connect()
+            mydb.modificarRegistro(nueva_hora,self.datos[4])
+            Notification(self.page,'Ejercicio Modificado con Éxito!','green').mostrar_msg()
+            mydb.close()
+            self.route.registroEjercicios.inicializar()
+        
+    def confirmarHora(self, e):
+        try:
+            hora_int = int(self.hora.value)
+            if hora_int > 24:
+                self.hora.value = None
+            else:
+                self.hora.value = hora_int
+                self.valido = True
+        except (TypeError, ValueError):
+            self.hora.value = None 
+
+        self.hora.update()
+
+    def confirmarMinuto(self, e):
+        try:
+            minuto_int = int(self.minuto.value)
+            if minuto_int > 59:
+                self.minuto.value = None
+            else:
+                self.minuto.value = minuto_int
+                self.valido = True
+        except (TypeError, ValueError):
+            self.minuto.value = None 
+
+        self.minuto.update()
+
+    def build(self):
+        return self.carta
+
+class CartaBuscadorEjercicios(ft.UserControl):
+    def __init__(self,route,datos):
+        super().__init__()
+        self.route = route
+        self.dato = datos
+
+        self.valido = False
+        
+        self.nombre = ft.Text(value=f'Actividad: {datos[0]}',text_align='center',color='white')
+        self.BotonAgregar = ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30,on_click=self.boton_agregar)
+
+        self.hora = ft.TextField(
+            label='Hora',
+            expand=1,
+            on_change=self.confirmarHora,
+            input_filter=ft.InputFilter(
+                regex_string=r"[0-9]", 
+                replacement_string=""
+            ),
+        )
+        
+        self.minuto = ft.TextField(
+            label='Minuto',
+            expand=1,
+            on_change=self.confirmarMinuto,
+            input_filter=ft.InputFilter(
+                regex_string=r"[0-9]", 
+                replacement_string=""
+            ),
+        )
+        
+        self.dialogContent = ft.Container(
+            content=ft.ResponsiveRow(
+                controls=[
+                    ft.Row(
+                        controls=[
+                            self.hora,
+                            ft.Text(':'),
+                            self.minuto,
+                        ]
+                    ),
+                ]
+            ),
+        )
+        
+        self.content = ft.Container(
+            content=ft.Column(
+                controls=[
+                    self.nombre
+                ]
+            ),height= 400
+        )
+
+        self.GRIS = '#252422'
+
+        self.carta = ft.Card(
+            content=ft.Container(
+                padding=10,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            height = 100,
+                            content=ft.Row(
+                                expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                controls=[
+                                    ft.Column(
+                                        controls=[
+                                            self.nombre
+                                        ]
+                                    ),
+                                    ft.Row(
+                                        controls=[
+                                            self.BotonAgregar
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color=self.GRIS, height=66
+        )
+        
+    def confirmarHora(self, e):
+        try:
+            hora_int = int(self.hora.value)
+            if hora_int > 24:
+                self.hora.value = None
+            else:
+                self.hora.value = hora_int
+                self.valido = True
+        except (TypeError, ValueError):
+            self.hora.value = None 
+
+        self.hora.update()
+
+    def confirmarMinuto(self, e):
+        try:
+            minuto_int = int(self.minuto.value)
+            if minuto_int > 59:
+                self.minuto.value = None
+            else:
+                self.minuto.value = minuto_int
+                self.valido = True
+        except (TypeError, ValueError):
+            self.minuto.value = None 
+
+        self.minuto.update()
+        
+        
+    def boton_agregar(self,e):
+        dialog = RegisterDialog(self.registrarEjercicio,self.dialogContent, "Ingrese los siguientes datos:")
+        dialog.data = e.control.data
+        self.route.page.dialog = dialog
+        dialog.open = True
+        self.route.page.update()
+        
+    def registrarEjercicio(self,e):
+        if self.valido:
+            id = self.route.getId()
+            fecha = self.route.index.fechaActual
+            tiempo = datetime.time(self.hora.value,self.minuto.value)
+
+            datos = [id, self.dato[1], fecha, tiempo]
+
+            mydb = EjerciciosDatabase(self.route)
+            mydb.connect()
+            resultado = mydb.registrarEjercicios(datos)
+            mydb.close()
+            
+            if resultado is None:
+                Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
+                return
+            
+            Notification(self.page,'Se ha registrado el alimento correctamente!','green').mostrar_msg()
+            self.route.page.go('/registro_ejercicios')
+        else:
+            Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
+
+    def build(self):
+        return self.carta
+    
 class CartaIngrediente(CartaRegistroAlimento):
     def __init__(self,route,datos,list,pos):
         super().__init__(route,datos)
         self.pos = pos
         self.lista = list
-        
+
     def eliminarAlimento(self,e):
         self.lista.pop(self.pos)
         self.route.index.agregarComidas()
@@ -405,7 +720,7 @@ class CartaIngredienteBuscador(CartaBuscador):
             self.route.page.go('/crear_platillo')
         else:
             Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
-        
+
 class CartaPlatillo(ft.UserControl):
     def __init__(self,route,datos):
         self.route = route
@@ -421,9 +736,9 @@ class CartaPlatillo(ft.UserControl):
         resultado = mydb.recuperarRegistro("A.Alimento, A.Categoria, A.Unidad,Cantidad, A.Energia_kcal, A.Proteina_g, A.Lipidos_g, A.Hidratos_de_carbono_g, A.Peso_bruto_g, A.ID_Alimento R.Cantidad",
                                            "Alimentos AS A, Relación_Alimento_Platillo AS R",
                                            "R.ID_Platillo = {} AND R.ID_Platillo = {} AND A.ID_Alimento = R.ID_Alimento".format(self.datos[1], self.datos[2]))
-        
+
         self.lista = ft.ListView(expand=True,padding=5,auto_scroll=True)
-        
+
         mydb.close()
         self.cuentaCalorias = 0
         for datos in resultado:
@@ -503,13 +818,13 @@ class CartaPlatillo(ft.UserControl):
         idUsuario = self.route.getId()
         # fecha = datetime.datetime.today().strftime(f"%Y-%m-%d")
         fecha = self.route.index.fechaActual
-        
+
 
         energia_por_cantidad = data[4]
         proteina_por_cantidad = data[5]
         lipidos_por_cantidad = data[6]
         hidratos_por_cantidad = data[7]
-        
+
         print(data[11])
         factor_conversion = data[11] / data[3]
 
@@ -521,18 +836,18 @@ class CartaPlatillo(ft.UserControl):
         datos = [idUsuario, data[9], fecha, calorias,lipidos,hidratos,proteinas,self.horario]
 
         self.listaDatos.append(datos)
-        
-    
+
+
     def boton_verIngredientes(self,e):
         dialog = PlatilloDialog(self.content, "Información del Platillo")
         dialog.data = e.control.data
         self.route.page.dialog = dialog
         dialog.open = True
         self.route.page.update()
-        
+
     def build(self):
         return self.carta
-    
+
 
 class CartaPlatilloBuscador(ft.UserControl):
     def __init__(self,route,datos):
@@ -548,9 +863,9 @@ class CartaPlatilloBuscador(ft.UserControl):
         resultado = mydb.recuperarRegistro("A.Alimento, A.Categoria, A.Unidad,Cantidad, A.Energia_kcal, A.Proteina_g, A.Lipidos_g, A.Hidratos_de_carbono_g, A.Peso_bruto_g, A.ID_Alimento R.Cantidad",
                                            "Alimentos AS A, Relación_Alimento_Platillo AS R",
                                            "R.ID_Platillo = {} AND R.ID_Platillo = {} AND A.ID_Alimento = R.ID_Alimento".format(self.datos[1], self.datos[2]))
-        
+
         self.lista = ft.ListView(expand=True,padding=5,auto_scroll=True)
-        
+
         mydb.close()
         self.cuentaCalorias = 0
         for datos in resultado:
@@ -594,7 +909,7 @@ class CartaPlatilloBuscador(ft.UserControl):
 
         self.calorias = ft.Text("Total Kilocalorias: {}".format(self.cuentaCalorias))
         self.BotonAgregar = ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30,on_click=self.boton_agregar)
-    
+
 
         self.carta = ft.Card(
             content= ft.Container(
@@ -635,7 +950,7 @@ class CartaPlatilloBuscador(ft.UserControl):
         proteina_por_cantidad = data[5]
         lipidos_por_cantidad = data[6]
         hidratos_por_cantidad = data[7]
-        
+
         print(data[11])
         factor_conversion = data[11] / data[3]
 
@@ -647,8 +962,7 @@ class CartaPlatilloBuscador(ft.UserControl):
         datos = [idUsuario, data[9], fecha, calorias,lipidos,hidratos,proteinas]
 
         self.listaDatos.append(datos)
-        
-    
+
     def boton_agregar(self,e):
         dialog = RegisterDialog(self.registrarAlimento,self.content, "Información del Platillo")
         dialog.data = e.control.data
@@ -657,7 +971,7 @@ class CartaPlatilloBuscador(ft.UserControl):
         self.route.page.update()
 
     def registrarAlimento(self,e):
-        
+
         ladb = generalDatabaseAccess(self.route)
         ladb.connect()
 
@@ -673,11 +987,11 @@ class CartaPlatilloBuscador(ft.UserControl):
             resultado = mydb.registrarAlimentoDia(data)
             if resultado == None:
                 break
-                
+
         mydb.close()
         if resultado is None:
                 Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
                 return
-        
+
     def build(self):
         return self.carta

@@ -131,7 +131,7 @@ class CreadorPlatillos(ft.UserControl):
             )
         )
 
-    def crearPlatillo(self):
+    def crearPlatillo(self,e):
         self.lvIngredientes.clean()
         mydb = generalDatabaseAccess(self.route)
         mydb.connect()
@@ -179,7 +179,7 @@ class CreadorPlatillos(ft.UserControl):
         return self.mainContainer
     
     def inicializar(self):
-        self.route.page.bgcolor = '#98FB98'
+        # self.route.page.bgcolor = '#98FB98'
         self.agregarIngredientes()
         self.route.page.update()
         print('Inicializando Creador de Platillos')
