@@ -82,7 +82,7 @@ class Index(ft.UserControl):
                                 ),
                                 ft.Container(
                                     content=ft.Row(
-                                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                        alignment=ft.MainAxisAlignment.CENTER,
                                     
                                         controls=[
                                             ft.Row(
@@ -141,7 +141,7 @@ class Index(ft.UserControl):
                                 ),
                                 ft.Container(
                                     content=ft.Row(
-                                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                        alignment=ft.MainAxisAlignment.CENTER,
                                         controls=[
                                             ft.Row(
                                                 spacing=10,
@@ -185,6 +185,7 @@ class Index(ft.UserControl):
                             controls=[
                                 ft.Container(
                                     content=ft.Row(
+                                        spacing=10,
                                         alignment=ft.MainAxisAlignment.CENTER,
                                         controls=[
                                             ft.Icon(name=ft.icons.NIGHTLIGHT,color='purple',size=30),
