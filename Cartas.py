@@ -18,11 +18,52 @@ class CartaRegistroAlimento(ft.UserControl):
         
         self.GRIS = '#252422'
         
-        self.botonModificar = ft.IconButton(icon=ft.icons.EDIT,icon_color='blue')
+        self.botonModificar = ft.IconButton(icon=ft.icons.EDIT,icon_color='blue',on_click=self.boton_modificar)
         self.botonEliminar = ft.IconButton(icon=ft.icons.DELETE_OUTLINE,icon_color='red',on_click=self.eliminarAlimento)
+        
+        self.valido = False
         
         self.nombre = ft.Text(value=f"Nombre: {datos[0]}")
         self.calorias = ft.Text(value=f"Calorías: {datos[1]}")
+        
+        self.cantidadDato = ft.TextField(
+            label='Cantidad',
+            on_change=self.calcular_nutrientes,
+            input_filter=ft.InputFilter(
+                regex_string=r"[0-9.]", 
+                replacement_string=""
+                )
+            )
+        
+        self.peso = ft.Text(color='white',value=0)
+        self.kcal = ft.Text(color='white',value=0)
+        self.proteina = ft.Text(color='white',value=0)
+        self.lipidos = ft.Text(color='white',value=0)
+        self.hidratos = ft.Text(color='white',value=0)
+        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='white')
+        
+        self.content = ft.Container(
+            expand=False,
+            content=ft.ResponsiveRow(
+                controls=[
+                    self.nombre,
+                    self.cantidadDato,
+                    self.unidad,
+                    ft.Row([
+                        ft.Text('Kcal: '),self.kcal,
+                    ]),
+                    ft.Row([
+                        ft.Text('Proteina: '),self.proteina,
+                    ]),
+                    ft.Row([
+                        ft.Text('Lipidos: '),self.lipidos,
+                    ]),
+                    ft.Row([
+                        ft.Text('Hidratos: '),self.hidratos,
+                    ]),
+                ]
+            )
+        )
         
         self.carta = ft.Card(
 
@@ -57,51 +98,78 @@ class CartaRegistroAlimento(ft.UserControl):
         )
         
     def eliminarAlimento(self,e):
-        Kcal = self.datos[1]
         
         mydb = UserDatabase(self.route)
         mydb.connect()
         mydb.eliminarRegistroAlimento(self.datos[7])
         mydb.close()
         
-        dia_actual = datetime.datetime.now()
-        dia_actual_str = dia_actual.strftime('%Y-%m-%d')
-        semana_actual = datetime.datetime.now().isocalendar()[1]
-        semana_actual = semana_actual + 1
-        
-        mydb = MetaDatabase(self.route)
-        mydb.connect()
-        resultado = mydb.obtenerRegistrosSem(self.route.getId(),'Calorica',semana_actual)
-        
-        if resultado:
-            for dato in resultado:
-                rest = dato[0] - decimal.Decimal(Kcal)
-                
-                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',4)
-                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',5)
-                
-                
-        if self.datos[8] == 'Verduras':
-            resultado2 = mydb.obtenerRegistrosDiarios(self.route.getId(),2,dia_actual_str)
-            if resultado2:
-                if resultado2[1] == 'Completada':
-                    mydb.restarObjetivosUsuario(self.route.getId())
-                rest = resultado2[0] - 1
-                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',2)
-                
-            
-        if self.datos[8] == 'Frutas':
-            resultado2 = mydb.obtenerRegistrosDiarios(self.route.getId(),1,dia_actual_str)
-            if resultado2:
-                if resultado2[1] == 'Completada':
-                    mydb.restarObjetivosUsuario(self.route.getId())
-                rest = resultado2[0] - 1
-                mydb.registrarProgresoMeta(self.route.getId(),rest,'En Progreso',1)
-                
-            mydb.close()
-        
         self.route.index.agregarComidas()
         self.route.page.update()
+        
+    def calcular_nutrientes(self,e):
+        try:
+            decimal.Decimal(self.cantidadDato.value)
+            self.valido = True
+        except (decimal.InvalidOperation, ValueError):
+            self.valido = False
+            self.proteina.value = 0
+            self.kcal.value = 0
+            self.lipidos.value = 0
+            self.hidratos.value = 0
+            self.cantidadDato.value = None
+            self.route.page.update()
+            return
+        
+        mydb = FoodDatabase(self.route)
+        mydb.connect()
+        resultado = mydb.obtenerAlimentoId(self.datos[9],self.datos[7])
+        mydb.close()
+        
+        valor_cantidad = decimal.Decimal(self.cantidadDato.value)
+        
+        # peso_por_taza = self.datos[8]
+        energia_por_cantidad = resultado[4]
+        proteina_por_cantidad = resultado[5]
+        lipidos_por_cantidad = resultado[6]
+        hidratos_por_cantidad = resultado[7]
+
+        factor_conversion = valor_cantidad / resultado[3]
+
+        self.kcal.value = round(factor_conversion * energia_por_cantidad,2)
+        self.proteina.value = round(factor_conversion * proteina_por_cantidad,2)
+        self.lipidos.value = round(factor_conversion * lipidos_por_cantidad,2)
+        self.hidratos.value = round(factor_conversion * hidratos_por_cantidad,2)
+        self.route.page.update()
+        
+    def boton_modificar(self,e):
+        dialog = RegisterDialog(self.modificarRegistro,self.content, "Ingrese la nueva cantidad:")
+        dialog.data = e.control.data
+        self.route.page.dialog = dialog
+        dialog.open = True
+        self.route.page.update()
+        
+    def modificarRegistro(self,e):
+        if self.valido:
+            IDRegistro= self.datos[7]
+            id = self.route.getId()
+
+            datos = [self.kcal.value,self.lipidos.value,self.proteina.value,self.hidratos.value,self.datos[7],self.route.getId()]
+            
+            mydb = UserDatabase(self.route)
+            mydb.connect()
+            resultado = mydb.modificarRegistro(datos)
+            
+            if resultado is None:
+                Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
+                return
+            
+            Notification(self.page,'Se ha modificado el alimento correctamente!','green').mostrar_msg()
+            self.route.index.agregarComidas()
+            self.route.page.go('/index')
+        else:
+            Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
+        
         
     def build(self):
         return self.carta
@@ -250,64 +318,6 @@ class CartaBuscador(ft.UserControl):
             self.route.page.go('/index')
         else:
             Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
-    
-    def registrarProgresoMeta(self):
-        fecha_actual = datetime.datetime.now()
-        totalKcal = 0
-        
-        mydb = MetaDatabase(self.route)
-        mydb.connect()
-        resultados = mydb.obtenerMetasEnProgreso(self.route.getId())
-        
-        mydb2 = UserDatabase(self.route)
-        mydb2.connect()
-        resultadoCal = mydb2.obtenerRegistrosSemana(self.route.getId(),fecha_actual)
-        
-        for datosCal in resultadoCal:
-            totalKcal += datosCal[0]
-        
-        if not resultados:
-            print("no hay objetivos pendientes")
-        else:
-            for datos in resultados:
-                # if datos[3] == 'Diaria':
-                #     if self.dato[1] == 'Verduras':
-                #         aux = datos[1]
-                #         aux += 1
-                #         # if aux == datos[2]:
-                #         #     mydb.registrarProgresoMeta(self.route.getId(),aux,'Completada',2)
-                #         #     mydb.actualizarObjetivosUsuario(self.route.getId())
-                #         # elif aux < datos[2]:
-                #         #     mydb.registrarProgresoMeta(self.route.getId(),aux,'En Progreso',2)
-                #         if aux <= datos[2]:
-                #             if aux == datos[2]:
-                #                 mydb.registrarProgresoMeta(self.route.getId(), aux, 'Completada', 2)
-                #                 mydb.actualizarObjetivosUsuario(self.route.getId())
-                #             else:
-                #                 mydb.registrarProgresoMeta(self.route.getId(), aux, 'En Progreso', 2)
-                #     elif self.dato[1] == 'Frutas':
-                #         # if datos[1] is None:
-                #         #     aux = 1
-                #         # else:
-                #         aux = datos[1]
-                #         if aux == datos[2]:
-                #             mydb.registrarProgresoMeta(self.route.getId(),aux+1,'Completada',1)
-                #             mydb.actualizarObjetivosUsuario(self.route.getId())
-                #         elif aux < datos[2]:
-                #             mydb.registrarProgresoMeta(self.route.getId(),aux,'En Progreso',1)
-                if datos[4] == 'Calorica':
-                    auxC = totalKcal
-                    if auxC < datos[2] and datos[2] == 2000:
-                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'En progreso',4)
-                    elif auxC >= datos[2] and datos[2] == 2000:
-                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'Completada',4)
-                        mydb.actualizarObjetivosUsuario(self.route.getId())
-                    if auxC < datos[2] and datos[2] == 10000:
-                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'En progreso',5)
-                    elif auxC >= datos[2] and datos[2] == 10000:
-                        mydb.registrarProgresoMeta(self.route.getId(),auxC,'Completada',5)
-                        mydb.actualizarObjetivosUsuario(self.route.getId())
-        mydb.close()
 
     def build(self):
         self.kcal.value = 0
@@ -924,8 +934,7 @@ class CartaPlatilloBuscador(ft.UserControl):
     def anadirAlimento(self,e):
         if self.valido:
             fecha = self.route.index.fechaActual
-            #self.dato[9] es ID de usuario
-            
+
             datos_usuario = {
                 'nombre': self.dato[0],
                 'kcal': self.kcal.value,
@@ -935,8 +944,6 @@ class CartaPlatilloBuscador(ft.UserControl):
                 'hidratos': self.hidratos.value,
                 'proteina': self.proteina.value
             }
-            
-            # datos = [self.dato[0],self.kcal.value,self.dato[9], fecha,self.lipidos.value,self.hidratos.value,self.proteina.value]
 
             Notification(self.page,'Se ha añadido el alimento!','green').mostrar_msg()
             self.regresarDatos(datos_usuario)
@@ -949,7 +956,6 @@ class CartaPlatilloBuscador(ft.UserControl):
         self.lipidos.value = 0
         self.hidratos.value = 0
         self.cantidadDato.value = None
-        # self.cantidadDato.update()
         return self.carta
     
 
