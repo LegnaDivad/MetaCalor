@@ -136,6 +136,62 @@ class UserDatabase(Config):
         cursor.execute(sql,(id,))
         self.connection.commit()
         return 'Eliminado'
+
+    def getPeso(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT Peso
+        FROM Usuario
+        WHERE ID_Usuario = %s'''
+        cursor.execute(sql, (id,))
+        return cursor.fetchone()
+    
+    def getAltura(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT Altura
+        FROM Usuario
+        WHERE ID_Usuario = %s'''
+        cursor.execute(sql, (id,))
+        return cursor.fetchone()
+    
+    def getNombre(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT Nombre
+        FROM Usuario
+        WHERE ID_Usuario = %s'''
+        cursor.execute(sql, (id,))
+        return cursor.fetchone()
+    
+     def obtenerConsumoSemana(self, id, fecha):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        fecha_formateada = fecha.strftime('%Y-%m-%d')
+        sql = '''
+        SELECT Total_Calorias, Fecha_Registro
+        FROM Registro_Alimentos
+        WHERE Fecha_Registro BETWEEN STR_TO_DATE(%s, '%Y-%m-%d') - INTERVAL ((DAYOFWEEK(STR_TO_DATE(%s, '%Y-%m-%d')) + 5) % 7) DAY AND STR_TO_DATE(%s, '%Y-%m-%d') AND ID_Usuario = %s ORDER BY Fecha_Registro DESC
+        '''
+        cursor.execute(sql, (fecha_formateada,fecha_formateada,fecha_formateada,id,))
+        return cursor.fetchall()
+    
+    def obtenerRegistrosSemanaEjercicios(self,id,fecha):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        fecha_formateada = fecha.strftime('%Y-%m-%d')
+        sql = '''
+        SELECT RA.ID_AF , RA.Duración_Act, A.MET, A.Tipo_Act, RA.Fecha_Registro
+        FROM Registro_Actividad_Física AS RA, Actividad_Física AS A
+        WHERE RA.Fecha_Registro BETWEEN STR_TO_DATE(%s, '%Y-%m-%d') - INTERVAL ((DAYOFWEEK(STR_TO_DATE(%s, '%Y-%m-%d')) + 5) % 7) DAY AND STR_TO_DATE(%s, '%Y-%m-%d') AND RA.ID_Usuario = %s AND A.ID_AF = RA.ID_AF ORDER BY RA.Fecha_Registro DESC
+        '''
+        cursor.execute(sql, (fecha_formateada,fecha_formateada,fecha_formateada,id,))
+        return cursor.fetchall()
         
 class FoodDatabase(Config):
     def __init__(self,route) -> None:
