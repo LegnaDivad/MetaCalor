@@ -67,30 +67,41 @@ class Index(ft.UserControl):
                 controls=[
                     ft.Container(
                         padding=20,bgcolor=self.GRIS,border_radius=ft.border_radius.only(top_left=13,top_right=13),
-                        content=ft.Row(
-                            expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        content=ft.Column(
+                            
+                            expand=True,alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
                                 ft.Container(
                                     content=ft.Row(
+                                        alignment=ft.MainAxisAlignment.CENTER,
                                         controls=[
-                                            ft.Icon(name=ft.icons.SUNNY,color='orange',size=25),
-                                            ft.Text(value='Desayuno',weight='bold',size=25,bgcolor=self.GRIS)
+                                            ft.Icon(name=ft.icons.SUNNY,color='orange',size=40),
+                                            ft.Text(color="white",value='Desayuno',weight='bold',size=25,bgcolor="self.GRIS")
                                         ]
                                     ),
                                 ),
                                 ft.Container(
-                                    content=ft.Column(
+                                    content=ft.Row(
+                                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                    
                                         controls=[
                                             ft.Row(
+                                                spacing=10,
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='desayuno',on_click=self.tomarHorario),
-                                                    ft.Text('Registrar alimento',color='white')
+
+                                                    ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='desayuno',on_click=self.tomarHorario,icon_size=30),
+                                                    ft.Text('Registrar \nalimento',color='white'),
+
                                                 ]
                                             ),
+                                            ft.Icon(),
                                             ft.Row(
+                                                
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='desayuno',on_click=self.tomarHorarioPlatillo),
-                                                    ft.Text('Registrar Platillo',color='white')
+
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador'),icon_size=30),
+                                                    ft.Text('Registrar \nPlatillo',color='white'),
+
                                                 ]
                                             ),
                                             
@@ -116,30 +127,37 @@ class Index(ft.UserControl):
                 controls=[
                     ft.Container(
                         padding=20,bgcolor=self.GRIS,border_radius=ft.border_radius.only(top_left=13,top_right=13),
-                        content=ft.Row(
-                            expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        content=ft.Column(
+                            expand=True,alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
                                 ft.Container(
                                     content=ft.Row(
+                                        alignment=ft.MainAxisAlignment.CENTER,
                                         controls=[
-                                            ft.Icon(name=ft.icons.CLOUD,color='blue',size=25),
-                                            ft.Text(value='Almuerzo',weight='bold',size=25,bgcolor=self.GRIS)
+                                            ft.Icon(name=ft.icons.CLOUD,color='blue',size=30),
+                                            ft.Text(color="white",value='Almuerzo',weight='bold',size=25,bgcolor=self.GRIS)
                                         ]
                                     ),
                                 ),
                                 ft.Container(
-                                    content=ft.Column(
+                                    content=ft.Row(
+                                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                                         controls=[
                                             ft.Row(
+                                                spacing=10,
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='almuerzo',on_click=self.tomarHorario),
-                                                    ft.Text('Registrar alimento',color='white')
+                                                    ft.Icon(),
+                                                    ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='almuerzo',on_click=self.tomarHorario, icon_size=30),
+                                                    ft.Text('Registrar \nalimento',color='white'),
+                                                    ft.Icon()
                                                 ]
                                             ),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='almuerzo',on_click=self.tomarHorarioPlatillo),
-                                                    ft.Text('Registrar Platillo',color='white')
+                                                    ft.Icon(),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='almuerzo',on_click=self.tomarHorarioPlatillo, icon_size=30),
+                                                    ft.Text('Registrar \nPlatillo',color='white'),
+                                                    ft.Icon()
                                                 ]
                                             ),
                                             
@@ -162,30 +180,39 @@ class Index(ft.UserControl):
                 controls=[
                     ft.Container(
                         padding=20,bgcolor=self.GRIS,border_radius=ft.border_radius.only(top_left=13,top_right=13),
-                        content=ft.Row(
-                            expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        content=ft.Column(
+                            expand=True,alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
                                 ft.Container(
                                     content=ft.Row(
+                                        alignment=ft.MainAxisAlignment.CENTER,
                                         controls=[
-                                            ft.Icon(name=ft.icons.NIGHTLIGHT,color='purple',size=25),
-                                            ft.Text(value='Cena',weight='bold',size=25,bgcolor=self.GRIS)
+                                            ft.Icon(name=ft.icons.NIGHTLIGHT,color='purple',size=30),
+                                            ft.Text(color="white",value='Cena',weight='bold',size=25,bgcolor=self.GRIS)
                                         ]
                                     ),
                                 ),
                                 ft.Container(
-                                    content=ft.Column(
+                                    content=ft.Row(
+                                        alignment=ft.MainAxisAlignment.CENTER,
+                                        spacing=10,
                                         controls=[
+                                            
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='cena',on_click=self.tomarHorario),
-                                                    ft.Text('Registrar alimento',color='white')
+
+                                                    ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='cena',on_click=self.tomarHorario,icon_size=30),
+                                                    ft.Text('Registrar \nalimento',color='white'),
+
                                                 ]
                                             ),
+                                            ft.Icon(),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='cena',on_click=self.tomarHorarioPlatillo),
-                                                    ft.Text('Registrar Platillo',color='white')
+
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador'),icon_size=30),
+                                                    ft.Text('Registrar \nPlatillo',color='white'),
+
                                                 ]
                                             ),
                                         ],
@@ -213,10 +240,12 @@ class Index(ft.UserControl):
                         # bgcolor=ft.colors.ORANGE,
                         content=ft.Row(
                             expand=True,
-                            alignment=ft.MainAxisAlignment.END,
-                            spacing=130,
+                            alignment=ft.MainAxisAlignment.START,
+                            spacing=800,
                             controls=[
-                                ft.Column(
+                                ft.Row(
+                                    spacing=300,
+
                                     # expand=1,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
@@ -237,10 +266,10 @@ class Index(ft.UserControl):
                                     # expand=1,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
-                                        ft.ElevatedButton(text='Añadir Recordatorio',icon=ft.icons.ACCESS_ALARM,style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.boton_agregar),
+                                        ft.ElevatedButton(text='           Añadir Recordatorio              ',icon=ft.icons.ACCESS_ALARM,style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.boton_agregar),
                                         ft.Row([
-                                            ft.ElevatedButton(text='Retrasar dia',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia2),
-                                            ft.ElevatedButton(text='Adelantar',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia),
+                                            ft.ElevatedButton(text='    Retrasar dia    ',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia2),
+                                            ft.ElevatedButton(text='    Adelantar    ',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia),
                                         ])
                                         
                                     ]
@@ -249,7 +278,7 @@ class Index(ft.UserControl):
                         )
                     ),
                     ft.Row(
-                        expand=8,
+                        expand=6,
                         controls=[
                             self.desayuno,
                             self.almuerzo,

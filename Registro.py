@@ -6,7 +6,9 @@ from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, Responsiv
 from Database import UserDatabase
 from AlertDialog import ConfirmDialog
 from Notification import Notification
-
+global Titulo, Confirmacion
+Titulo = "Registro de Usuarios"
+Confirmacion = "se ha registrado correctamente!"
 
 class Register(UserControl):
     def __init__(self, route):
@@ -64,7 +66,7 @@ class Register(UserControl):
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                     spacing=15,
                     controls=[
-                        Text('Registro de Usuario',font_family="Arial #4D4D4D",size=30,color='#26587E'),
+                        Text(Titulo,font_family="Arial #4D4D4D",size=30,color='#26587E'),
                         self.nombre,
                         self.usuario,
                         self.contrasenia,
@@ -153,6 +155,12 @@ class Register(UserControl):
         return self.registroGUI
 
     def inicializar(self):
+        from Perfil import Editing
+        if  Editing == False:
+            self.editing = False
+        else:
+            self.editing = True
+            
         self.nombre.value = None
         self.usuario.value = None
         self.contrasenia.value = None

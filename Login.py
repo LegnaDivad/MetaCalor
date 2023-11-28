@@ -94,10 +94,14 @@ class Login(UserControl):
     #     mydb.close()
         
     def IniciarIndex(self,resultado):
+        nombre = resultado[0]
+        id = resultado[2]
         self.route.setLogInfo(resultado)
         self.route.menu.cont.visible = True
         self.route.page.appbar.visible = True
-        self.route.bar.set_Nickname(resultado[0])
+        self.route.bar.set_Nickname(nombre)
+        self.route.perfil.set_Nickname(nombre)
+        self.route.perfil.set_info(id)
         self.route.competencia.set_Datos(resultado)
         # self.generarMetas()
         self.route.menu.update()

@@ -4,6 +4,7 @@ from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
 
+
 class RegistroGUI(ft.UserControl):
     def __init__(self,name,iconoSTR,color):
         super().__init__()

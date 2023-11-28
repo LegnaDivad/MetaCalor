@@ -64,6 +64,15 @@ class UserDatabase(Config):
         else:
             return None
         
+    def get_info(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        consulta = " SELECT Nombre, Edad, contrasenia, Peso, ID_Usuario FROM Usuario WHERE ID_Usuario = %s"
+        cursor.execute(use)
+        cursor.execute(consulta, (id,))
+        resultado = cursor.fetchone()
+        return resultado        
+
     def obtenerTMB(self,id):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
