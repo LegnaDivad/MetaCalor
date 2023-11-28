@@ -131,6 +131,7 @@ class Index(ft.UserControl):
                                     content=ft.Column(
                                         controls=[
                                             ft.Row(
+                                                spacing=5,
                                                 controls=[
                                                     ft.IconButton(icon=ft.icons.ADD,icon_color='green',key='almuerzo',on_click=self.tomarHorario),
                                                     ft.Text('Registrar alimento',color='white')
@@ -138,8 +139,9 @@ class Index(ft.UserControl):
                                             ),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='almuerzo',on_click=self.tomarHorarioPlatillo),
-                                                    ft.Text('Registrar Platillo',color='white')
+
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='almuerzo',on_click=self.tomarHorarioPlatillo, icon_size=30),
+                                                    ft.Text('Registrar \nPlatillo   ',color='white'),
                                                 ]
                                             ),
                                             
@@ -213,10 +215,12 @@ class Index(ft.UserControl):
                         # bgcolor=ft.colors.ORANGE,
                         content=ft.Row(
                             expand=True,
-                            alignment=ft.MainAxisAlignment.END,
-                            spacing=130,
+                            alignment=ft.MainAxisAlignment.START,
+                            spacing=300,
                             controls=[
-                                ft.Column(
+                                ft.Row(
+                                    spacing=100,
+
                                     # expand=1,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[

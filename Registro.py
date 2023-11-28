@@ -15,12 +15,15 @@ class Register(UserControl):
         
         self.GRIS = '#4D4D4D'
         self.focused_color = '#26587E'
+        self.titulo = "Datos"
+        self.confirmacion = "Registrado"
+        self.path = "/"
         
         self.nombre = TextField(label='Nombre',width=450,autofocus=True,focused_color=self.focused_color,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.usuario = TextField(label='Usuario',width=450,focused_color=self.focused_color,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.contrasenia = TextField(label='Contraseña',width=450,focused_color=self.focused_color,password=True,can_reveal_password=True,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.contraseniaRep = TextField(label='Repetir Contraseña',focused_color=self.focused_color,width=450,password=True,can_reveal_password=True,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
-        self.botonRegistro = ElevatedButton(text='Registrarse',icon=icons.APP_REGISTRATION,style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.registrarUsuario)
+        self.botonRegistro = ElevatedButton(text="Confirmar",icon=icons.APP_REGISTRATION,style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.registrarUsuario)
         self.peso = TextField(label='Peso kg.',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))    
         self.altura = TextField(label='Altura cm.',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.edad = TextField(label='Edad',focused_color=self.focused_color,width=120,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
@@ -80,7 +83,7 @@ class Register(UserControl):
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                     spacing=15,
                     controls=[
-                        Text('Registro de Usuario',font_family="Arial #4D4D4D",size=30,color='#26587E'),
+                        Text(value=self.titulo,font_family="Arial #4D4D4D",size=30,color='#26587E',),
                         self.nombre,
                         self.usuario,
                         self.contrasenia,
@@ -90,7 +93,7 @@ class Register(UserControl):
                         self.actividad,
                         # self.genero,
                         self.botonRegistro,
-                        TextButton(text='Iniciar Sesión',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go('/')),
+                        TextButton(text='Retroceder',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go(self.path)),
                     ]
                     
                 ),
@@ -179,13 +182,33 @@ class Register(UserControl):
         if resultado is None:
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
-        Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
-        self.route.page.go('/')
+        Notification(self.page,f'Se ha {self.confirmacion} correctamente!','green').mostrar_msg()
+        self.route.page.go(self.path)
             
     def build(self):
+        
         return self.registroGUI
 
     def inicializar(self):
+        try:
+            from Perfil import Editing
+            if  Editing == False:
+                self.path = "/"
+                self.editing = False
+                self.titulo = "Registro"
+                self.confirmacion = "registrado"
+                Editing = False
+            else:
+                self.path = "/Perfil"
+                self.editing = True
+                self.titulo = "Editar Perfil"
+                self.confirmacion = "editado"
+            print(Editing)
+        except:
+            self.editing = False
+            self.titulo = "Registro"
+            self.confirmacion = "registrado"
+       
         self.nombre.value = None
         self.usuario.value = None
         self.contrasenia.value = None
