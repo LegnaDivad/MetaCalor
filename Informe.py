@@ -3,8 +3,11 @@ import flet as ft
 from flet_core.control import Control, OptionalNumber
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
+from datetime import timedelta
 import datetime
 from Database import UserDatabase
+from Cartas import CartaInforme
+from PDFs import *
 
 class Informe(ft.UserControl):
     def __init__(self, route):
@@ -15,9 +18,11 @@ class Informe(ft.UserControl):
         
         self.fechaActual = datetime.datetime.now()
         self.aux = datetime.datetime.now()
-        
+        self.fechaF = datetime.datetime.now().date()
+        self.fechas = []
+
         self.kcalTotales = ft.Text(color='black')
-        self.informeBoton = ft.ElevatedButton(text='Descargar Informe',style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)))
+        self.informeBoton = ft.ElevatedButton(text='Descargar Informe en PDF',on_click=self.elaborarPDF,style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)))
         self.semanaAnteriorBoton = ft.TextButton(text='Semana Anterior',style=ft.ButtonStyle(color='Black',shape=ft.RoundedRectangleBorder(radius=10)),on_click=self.retrocederSemana)
         self.semanaActualBoton = ft.TextButton(disabled=True,text='Semana Actual',style=ft.ButtonStyle(color='green',shape=ft.RoundedRectangleBorder(radius=10)),on_click=self.adelantarSemana)
         
@@ -29,10 +34,17 @@ class Informe(ft.UserControl):
         self.hover_radius = 110
         self.normal_badge_size = 40
         self.hover_badge_size = 50
-        
+
+        self.sumaCalQuemadas = 0
+        self.horasDeEjercicio = 0
+        self.listCalQuemadasDiarias = []
+        self.listCalConsumidasDiarias = []
+
         self.normal_title_style = ft.TextStyle(
             size=12, color=ft.colors.WHITE, weight=ft.FontWeight.BOLD
         )
+
+        self.listView = self.SearchList = ft.ListView(expand=1,padding=5,auto_scroll=ft.ScrollMode.ALWAYS)
         
         self.hover_title_style = ft.TextStyle(
             size=16,
@@ -80,9 +92,10 @@ class Informe(ft.UserControl):
         )
         
         self.informeEjercicios = ft.Container(
-            expand=True,
-            bgcolor='#bcbd8b',
-            margin=70
+            expand=True,bgcolor='#023020', padding =20, border_radius=13,
+            content= ft.Column(
+                controls=[ft.Text("Informe de Quema de Calorias Semanal:"),self.listView]
+            )
         )
         
         self.cont = ft.Container(
@@ -114,6 +127,8 @@ class Informe(ft.UserControl):
             fecha_domingo = self.fechaActual - datetime.timedelta(days=dias_para_restar)
         
         self.fechaActual = fecha_domingo
+        self.fechaF = fecha_domingo.date()
+        self.listView.controls.clear()
         self.obtenerInfo()
         
     def adelantarSemana(self,e):
@@ -123,6 +138,7 @@ class Informe(ft.UserControl):
         self.semanaActualBoton.disabled = True
         
         self.fechaActual = self.aux
+        self.listView.controls.clear()
         self.obtenerInfo()
         
     def badge(self,icon,size):
@@ -155,10 +171,18 @@ class Informe(ft.UserControl):
         sumaProteinas = 0
         sumaCarbohidratos = 0
         total = 0
+
+        self.listCalConsumidasDiarias.clear()
+        self.listCalQuemadasDiarias.clear()
         
         mydb = UserDatabase(self.route)
         mydb.connect()
         resultado = mydb.obtenerRegistrosSemana(self.route.getId(),self.fechaActual)
+        peso = mydb.getPeso(self.route.getId())
+        TMB = mydb.obtenerTMB(self.route.getId())
+        resultadoQuemaDeCal = mydb.obtenerRegistrosSemanaEjercicios(self.route.getId(),self.fechaActual)
+        resultadoConsumoCal = mydb.obtenerConsumoSemana(self.route.getId(),self.fechaActual)
+
         mydb.close()
         for dato in resultado:
             sumaKcal += dato[0]
@@ -167,7 +191,53 @@ class Informe(ft.UserControl):
             sumaCarbohidratos += dato[3]
             
         total = sumaLipidos + sumaProteinas + sumaCarbohidratos
+
         
+        fechas = [self.fechaF - timedelta(days=d) for d in range(6, -1, -1)]
+        
+        i = 0
+        limite = len(resultadoQuemaDeCal)
+        print(limite)
+        for dia in fechas:
+            calDia = 0
+            for data in resultado:
+                if i > limite-1:
+                    break
+                if  resultadoConsumoCal[i][1] != dia: 
+                    break
+
+                duracionHoras = resultadoQuemaDeCal[i][1].total_seconds() / 3600.0
+                cal = duracionHoras * resultadoQuemaDeCal[i][2] * peso[0]
+                #print(duracionHoras,resultadoQuemaDeCal[i][2], peso[0], cal)
+                calDia += cal
+                i+=1
+            calDia += TMB[0]
+            self.listCalQuemadasDiarias.append(calDia)
+            self.sumaCalQuemadas += calDia
+            
+        print("Calorias Quemadas Sumatoria: ", self.listCalQuemadasDiarias, resultadoQuemaDeCal)
+        i = 0
+        limite = len(resultadoConsumoCal)
+        print(limite)
+        for dia in fechas:
+            calDia = 0
+            for data in resultadoConsumoCal:
+                print(i > limite-1)
+                if i > limite-1:
+                    break
+                if  resultadoConsumoCal[i][1] != dia: 
+                    break
+                
+                print(dia, resultadoConsumoCal[i][1])
+                calDia += resultadoConsumoCal[i][0]
+                i+=1
+                print(i,limite)
+            self.listCalConsumidasDiarias.append(calDia)
+            
+        print("Calorias Consumidas Sumatoria: ", self.listCalConsumidasDiarias, resultadoConsumoCal)
+
+        self.fechas=fechas
+
         if total > 0:
             self.lipidos = round((sumaLipidos / total) * 100,2)
             self.proteinas = round((sumaProteinas / total) * 100,2)
@@ -213,9 +283,34 @@ class Informe(ft.UserControl):
                 badge_position=0.98,
             ),
         )
+
+        i=0
+        while i < 7:
+            item = CartaInforme(self.route,self.listCalConsumidasDiarias[i],self.listCalQuemadasDiarias[i], fechas[i])
+            self.listView.controls.append(item)
+            print(i)
+            i+=1
         
+        self.sumaCalQuemadas = 0
+
         self.cont.update()
+
+    def elaborarPDF(self,e):
+
+        mydb = UserDatabase(self.route)
+        mydb.connect()
+
+        pesoUsuario=mydb.getPeso(self.route.getId())
+        alturaUsuario=mydb.getAltura(self.route.getId())
+        nombreUsuario=mydb.getNombre(self.route.getId())
         
+        nutrientes=[self.lipidos,self.proteinas,self.carbohidratos]
+
+        generar_pdf(nombreUsuario[0],pesoUsuario[0],alturaUsuario[0],nutrientes,self.kcalTotales.value,self.listCalQuemadasDiarias,self.listCalConsumidasDiarias,self.fechas)
+
+        mydb.close()
+        #print(nombreUsuario,pesoUsuario,alturaUsuario,nutrientes,self.kcalTotales,self.listCalQuemadasDiarias,self.listCalConsumidasDiarias,self.fechas)
+    
     def build(self):
         return self.cont
     
