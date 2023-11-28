@@ -61,30 +61,35 @@ class Informe(ft.UserControl):
         )
         
         self.informeAlimentos = ft.Container(
+            border_radius=ft.border_radius.all(13),
             expand=True,
             bgcolor='#bcbd8b',
             margin=70,
             padding=30,
-            alignment=ft.alignment.center,
+            #alignment=ft.alignment.center,
             content=ft.Row(
                 expand=True,
                 controls=[
+                    ft.Icon(size=40),
                     ft.Column(
                         expand=True,
                         controls=[
-                            ft.Text(value='Informe Semanal de Alimentos',color='black'), 
+                            ft.Text(value='Informe Semanal de Alimentos',color='black',weight=ft.FontWeight.BOLD,size=20), 
                             self.kcalTotales,
                         ]
                     ),
+                    ft.Text("           "),   
+                    ft.Icon(size=40,name=ft.icons.INFO_ROUNDED,color='white'),
                     ft.Container(
                         expand=True,
+                        alignment=ft.alignment.top_right,
                         content=self.chart
                     ),
                     ft.Column(
                         expand=True,
                         horizontal_alignment=ft.CrossAxisAlignment.END,
                         controls=[
-                            self.informeBoton,
+                            
                         ]
                     ),
                 ]
@@ -92,6 +97,7 @@ class Informe(ft.UserControl):
         )
         
         self.informeEjercicios = ft.Container(
+            border_radius=ft.border_radius.all(13),
             expand=True,bgcolor='#023020', padding =20, border_radius=13,
             content= ft.Column(
                 controls=[ft.Text("Informe de Quema de Calorias Semanal:"),self.listView]
@@ -104,8 +110,10 @@ class Informe(ft.UserControl):
                 controls=[
                     ft.Row(
                         controls=[
-                            self.semanaAnteriorBoton,
-                            self.semanaActualBoton
+                            ft.Container(bgcolor="#eff1ed",  border_radius=ft.border_radius.all(13),content=ft.Row(controls=[self.semanaAnteriorBoton,
+                            self.semanaActualBoton,])),
+                            
+                            self.informeBoton
                         ]
                     ),
                     self.informeAlimentos,
@@ -141,13 +149,13 @@ class Informe(ft.UserControl):
         self.listView.controls.clear()
         self.obtenerInfo()
         
-    def badge(self,icon,size):
+    def badge(self,size):
         return ft.Container(
-            ft.Icon(icon),
+            #ft.Icon(icon),
             width=size,
             height=size,
-            border=ft.border.all(1, ft.colors.BROWN),
-            border_radius=size / 2,
+            #border=ft.border.all(1, ft.colors.BROWN),
+            #border_radius=size / 2,
             bgcolor=ft.colors.WHITE,
         )
         
@@ -242,7 +250,7 @@ class Informe(ft.UserControl):
             self.lipidos = round((sumaLipidos / total) * 100,2)
             self.proteinas = round((sumaProteinas / total) * 100,2)
             self.carbohidratos = round((sumaCarbohidratos / total) * 100,2)
-            self.kcalTotales.value = f'Calorías consumidas en la semana: {sumaKcal}'
+            self.kcalTotales.value = f'Calorías consumidas en la semana:  {sumaKcal}'
         else:
             self.lipidos = 0
             self.proteinas = 0
@@ -257,8 +265,8 @@ class Informe(ft.UserControl):
                 title_style=self.normal_title_style,
                 color=ft.colors.BLUE,
                 radius=self.normal_radius,
-                badge=self.badge(ft.icons.AC_UNIT, self.normal_badge_size),
-                badge_position=0.98,
+                #badge=self.badge(ft.icons.AC_UNIT, self.normal_badge_size),
+                #badge_position=0.98,
             ),
         )
         self.chart.sections.append(
@@ -268,8 +276,8 @@ class Informe(ft.UserControl):
                 title_style=self.normal_title_style,
                 color=ft.colors.YELLOW,
                 radius=self.normal_radius,
-                badge=self.badge(ft.icons.AC_UNIT, self.normal_badge_size),
-                badge_position=0.98,
+                #badge=self.badge(ft.icons.AC_UNIT, self.normal_badge_size),
+                #badge_position=0.98,
             ),
         )
         self.chart.sections.append(
@@ -279,8 +287,8 @@ class Informe(ft.UserControl):
                 title_style=self.normal_title_style,
                 color=ft.colors.RED,
                 radius=self.normal_radius,
-                badge=self.badge(ft.icons.AC_UNIT, self.normal_badge_size),
-                badge_position=0.98,
+                #badge=self.badge(ft.icons.AC_UNIT, self.normal_badge_size),
+                #badge_position=0.98,
             ),
         )
 

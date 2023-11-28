@@ -31,24 +31,29 @@ class SideMenu(ft.UserControl):
             bgcolor='#F2E8CF',
             destinations=[
                 ft.NavigationRailDestination(
-                    icon_content=ft.Icon(ft.icons.LOCAL_DINING_OUTLINED,color='black'),
-                    selected_icon_content=ft.Icon(ft.icons.LOCAL_DINING),
-                    label_content=ft.Text("Pagina Principal",color='black'),
+                    
+                    padding=ft.padding.all(50),
+                    icon_content=ft.Icon(ft.icons.LOCAL_DINING_OUTLINED,color='#4D4D4D', size=45),
+                    selected_icon_content=ft.Icon(ft.icons.LOCAL_DINING, size=70,color='#5F6F52'),
+                    label_content=ft.Text("Pagina Principal",color='black',size=15),
                 ),
                 ft.NavigationRailDestination(
-                    icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS_OUTLINED,color='black'),
-                    selected_icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS),
-                    label_content=ft.Text("Informe",color='black'),
+                    padding=ft.padding.all(50),
+                    icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS_OUTLINED,color='#4D4D4D', size=45),
+                    selected_icon_content=ft.Icon(ft.icons.LIBRARY_BOOKS, size=70,color='#5F6F52'),
+                    label_content=ft.Text("Informe",color='black',size=15),
                 ),
                 ft.NavigationRailDestination(
-                    icon_content=ft.Icon(ft.icons.SPORTS_HANDBALL,color='black'),
-                    selected_icon_content=ft.Icon(ft.icons.SPORTS_HANDBALL),
-                    label_content=ft.Text("Registro de Ejercicios",color='black'),
+                    padding=ft.padding.all(50),
+                    icon_content=ft.Icon(ft.icons.SPORTS_HANDBALL,color='#4D4D4D', size=45),
+                    selected_icon_content=ft.Icon(ft.icons.SPORTS_HANDBALL, size=70,color='#5F6F52'),
+                    label_content=ft.Text("Registro de Ejercicios",color='black',size=15),
                 ),
                 ft.NavigationRailDestination(
-                    icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP,color='black'),
-                    selected_icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP),
-                    label_content=ft.Text("Competencia",color='black'),
+                    padding=ft.padding.all(50),
+                    icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP,color='#4D4D4D', size=45),
+                    selected_icon_content=ft.Icon(ft.icons.FORMAT_LIST_NUMBERED_SHARP, size=70,color='#5F6F52'),
+                    label_content=ft.Text("Competencia",color='black',size=15),
                 ),
             ], on_change=self.selectedIndex,
         )

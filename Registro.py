@@ -18,7 +18,8 @@ class Register(UserControl):
         self.titulo = "Datos"
         self.confirmacion = "Registrado"
         self.path = "/"
-        
+        self.ID = None
+
         self.nombre = TextField(label='Nombre',width=450,autofocus=True,focused_color=self.focused_color,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.usuario = TextField(label='Usuario',width=450,focused_color=self.focused_color,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
         self.contrasenia = TextField(label='Contraseña',width=450,focused_color=self.focused_color,password=True,can_reveal_password=True,text_style=TextStyle(color=self.GRIS),focused_border_color=self.GRIS,label_style=TextStyle(color=self.GRIS))
@@ -110,7 +111,7 @@ class Register(UserControl):
     def calcularTMB(self,genero,tipoAct):
         if genero == 'Hombre':
             tmb = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
-            return self.TMB
+           
         elif genero == 'Mujer':
             tmb = 447.593 + (9.247 * float(self.peso.value)) + (3.098 * float(self.altura.value)) - (4.330 * float(self.edad.value))
             
@@ -126,7 +127,6 @@ class Register(UserControl):
             factor_actividad = 1.9
         else:
             return "Tipo de actividad no válido"
-
         self.TMB = tmb * factor_actividad
         return self.TMB
 
@@ -177,24 +177,27 @@ class Register(UserControl):
         mydb = UserDatabase(self.route)
         mydb.connect()
         if self.editing == True:
-            resultado = mydb.editarUsuario(datos)
+            resultado = mydb.editarUsuario(datos,self.ID)
+            Notification(self.page,'Para confirmar ingresa tus nuevas credenciales','White').mostrar_msg()
         else:
             resultado = mydb.registrarUsuario(datos)
+            Notification(self.page,f'Se ha {self.confirmacion} correctamente!','green').mostrar_msg()
         mydb.close()
         
         if resultado is None:
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
-        Notification(self.page,f'Se ha {self.confirmacion} correctamente!','green').mostrar_msg()
-        self.route.page.go(self.path)
-            
+        
+        
+        
+        self.route.page.go("/")
     def build(self):
         
         return self.registroGUI
 
     def inicializar(self):
         try:
-            from Perfil import Editing
+            from Perfil import Editing, USER_ID
             if  Editing == False:
                 self.path = "/"
                 self.editing = False
@@ -206,6 +209,8 @@ class Register(UserControl):
                 self.editing = True
                 self.titulo = "Editar Perfil"
                 self.confirmacion = "editado"
+                self.ID = USER_ID
+                print("ID: ", self.ID)
             print(Editing)
         except:
             self.editing = False

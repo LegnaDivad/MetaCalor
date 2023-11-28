@@ -13,16 +13,17 @@ class Search(ft.UserControl):
         super().__init__()
         self.route = route
         
-        self.focused_color = '#26587E'
+        self.focused_color = '#17374f'
         self.GRIS = '#4D4D4D'
         
         self.SearchButtom = ft.ElevatedButton(
+            elevation=1,
             text='Buscar',
             icon=ft.icons.SEARCH,
             on_click=self.buscarElementos,
             style=ft.ButtonStyle(
-                color="#26587E",
-                bgcolor="#E3E9F0"
+                color="#white",
+                bgcolor="#17374f"
             )
         )
         
@@ -30,11 +31,11 @@ class Search(ft.UserControl):
             label='Nombre de Alimento',
             autofocus=True,
             focused_color=self.focused_color,
-            text_style=ft.TextStyle(color=self.GRIS),
+            text_style=ft.TextStyle(color="white"),
             focused_border_color=self.GRIS,
             label_style=ft.TextStyle(color=self.GRIS),
             expand=True,
-            color='black'
+            color='white'
         )
         
 
@@ -45,6 +46,7 @@ class Search(ft.UserControl):
         self.RecomendationField = ft.Card(
             content=ft.Container(
                 self.recomendaciones,
+                border_radius=ft.border_radius.all(20),
                 bgcolor ='#386641',
                 expand=True,
                 height = 40,

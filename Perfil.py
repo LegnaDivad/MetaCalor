@@ -1,14 +1,19 @@
 from flet import *
 from flet_core.ref import Ref
 from flet_core.types import AnimationValue, ClipBehavior, OffsetValue, ResponsiveNumber, RotateValue, ScaleValue
-
+from Database import UserDatabase
 
 
 class Perfil(UserControl):
     def __init__(self, route):
         super().__init__()
         self.route = route
-
+        self.nickname = Text(weight=FontWeight.BOLD,color='white',size=20)
+        self.nombre = Text(weight=FontWeight.BOLD,color='white',size=20)
+        self.edad = Text(weight=FontWeight.BOLD,color='white',size=20)
+        self.contrasena = Text(weight=FontWeight.BOLD,color='white', size=20)
+        self.peso = Text(weight=FontWeight.BOLD,color='white', size=20)
+        self.id = Text(weight=FontWeight.BOLD,color='#4D4D4D',size=35)
 
 
 
@@ -39,49 +44,40 @@ class Perfil(UserControl):
                                         Row(
                                             alignment=alignment.top_center,
                                             controls=[
-                                                Text('  Datos de la cuenta              ', color='#252422', size=30),
+                                                Text('  Datos de la cuenta', color='#4D4D4D',weight=FontWeight.BOLD,size=30),
                        
-                                                ElevatedButton(text='Editar', style=ButtonStyle(color='#252422', shape=RoundedRectangleBorder(radius=10)), on_click=self.EditarDatos),
+                                                ElevatedButton(text='Editar', style=ButtonStyle(color='#E3E9F0', shape=RoundedRectangleBorder(radius=10)), on_click=self.EditarDatos),
                                             ]
                                         ),
                                         Container(border_radius=border_radius.all(20), margin=15, expand=True, bgcolor='#252422', content=Row(
                                             expand=True,
                                             controls=[
                                                 Column(
-                                                    spacing=30,
+                                                    spacing=50,
                                                     expand=True,
                                                     controls=[
                                                         Row(
                                                             
                                                             controls=[
-                                                                Text('    Nombre: ', color='White', size=25),
+                                                                Icon(),
+                                                                Text('Nombre: ', color='White', size=25,weight=FontWeight.BOLD),
                                                                 self.nombre
                                                             ]
                                                         ),
                                                         Row(
-                                                            spacing=90,
+                                                            spacing=20,
                                                             controls=[
                                                                  Column(
-                                                                    spacing=100,
-                                                            controls=[
-                                                            
-                                                            Row(controls=[Icon(size=8),Icon(color="white",size=40,name=icons.PERSON), Text('Usuario: ', color='white',weight=FontWeight.BOLD), self.nickname],),
-                                                            Row(controls=[Icon(size=8),Icon(color="white",size=40,name=icons.LOCK), Text('Constrasena: ', color='white',weight=FontWeight.BOLD), self.contrasena]),
-                                                            Row(controls=[Icon(size=8),Icon(color="white",size=40,name=icons.SCALE), Text('Peso: ', color='white',weight=FontWeight.BOLD), self.peso]),
-                                                            Row(
-                                                                
-                                                            [Icon(size=8),Icon(color="white",size=40,name=icons.FEATURED_VIDEO_ROUNDED), Text('Edad: ', color='white')]
-                                                            
-                                                            ),
+                                                                    spacing=40,
+                                                                    controls=[
+                                                                    Row(controls=[Icon(),Icon(color="white",size=50,name=icons.PERSON), Text('Usuario: ', color='white',weight=FontWeight.BOLD,size=20), self.nickname],),
+                                                                    Row(controls=[Icon(),Icon(color="white",size=50,name=icons.LOCK), Text('Constrasena: ', color='white',weight=FontWeight.BOLD,size=20), self.contrasena]),
+                                                                    Row(controls=[Icon(),Icon(color="white",size=50,name=icons.SCALE), Text('Peso: ', color='white',weight=FontWeight.BOLD,size=20), self.peso]),
+                                                                    Row(controls=[Icon(),Icon(color="white",size=50,name=icons.FEATURED_VIDEO_ROUNDED), Text('Edad: ', weight=FontWeight.BOLD,color='white', size=20), self.edad]),
                                                           
                                                             ],
                                                         ),
-                                                        Column(
-                                                            spacing=150,
-                                                            controls=[
-                                                            
-                                                           
-                                                    ]),
+                                                        
                                                             ]
                                                         ),
                                                        
@@ -119,26 +115,29 @@ class Perfil(UserControl):
                                                 border_radius=border_radius.all(20),
                                                 bgcolor="#E3E9F0",
                                                 content=
+                                                Row(
+                                                    controls=[
                                                 Column(
                                                     alignment=alignment.center,
                                                     controls=
                                                     [
                                                         Container(
-                                                            margin=15,
+                                                            margin=25,
                                                             expand=True,
-                                                            bgcolor='white',
+                                                            
                                                             content=
                                                             Image(
-                                                            src="/images/Logo3.PNG",
+                                                            src="/images/gato.PNG",
                                                             width=300,
                                                             height=300,
                                                             fit=ImageFit.CONTAIN
                                                             ),
                                                         ),
                                                         
-                                                        Text(f"                 ID: ", color='#4D4D4D', size=20)
+                                                        
                                                     ]
-                                                )
+                                                ),Row(alignment=alignment.top_left,controls=[Text(f"ID: ", color='#4D4D4D',weight=FontWeight.BOLD, size=40,), self.id,])
+                                ])
                                         )
                                     ),
                                     Container(
@@ -146,46 +145,7 @@ class Perfil(UserControl):
                                         expand=True,
 
                                     )
-                                    # Container(
-                                    #     margin=10,
-                                    #     expand=True,
-                                    #     border_radius=border_radius.all(20),
-                                    #     alignment=alignment.center,
-                                    #     bgcolor='white',
-                                    #     content=
-                                    #     Column(
-                                    #         alignment=alignment.center_right,
-                                    #         controls=
-                                    #         [
-                                    #             Container(alignment=alignment.center, content=Text('Metas', color='#4D4D4D', size=40),),
-                                    #             Container(
-                                    #                 margin=15,
-                                    #                 #expand=True,
-
-                                    #                 bgcolor='#4D4D4D',
-                                    #                 border_radius=border_radius.all(20),
-                                    #                 height=250,
-                                    #                 width=900,
-                                    #                 content=
-                                    #                 Image(
-                                    #                 src="/images/Logo3.PNG",
-                                    #                 width=300,
-                                    #                 height=300,
-                                    #                 fit=ImageFit.CONTAIN
-                                    #                 )
-                                    #             ),
-
-                                    #             Row(alignment=alignment.center, controls=[
-                                    #                 Text('                                                                 '),
-                                    #                 ElevatedButton(width=300,text='Editar', style=ButtonStyle(color='#4D4D4D', shape=RoundedRectangleBorder(radius=10)), on_click=self.inicializar),
-
-                                    #                 ]
-                                    #                 )
-
-                                    #         ]
-                                    #     )
-
-                                    # ),
+                                   
                                 ]
                             )
                         ]
@@ -206,9 +166,12 @@ class Perfil(UserControl):
 
 
     def EditarDatos(self,e):
-        global Editing
+        global Editing, USER_ID
+        USER_ID = self.id.value
+        print("PrevID: ",USER_ID)
         Editing = True
-        self.page.go('/registro')    
+        self.page.go('/registro')
+            
 
     def set_info(self,id):
         mydb = UserDatabase(self.route)
@@ -221,7 +184,8 @@ class Perfil(UserControl):
         self.set_Contrasena(resultado[2])
         self.set_Peso(resultado[3])
         self.set_ID(resultado[4])
-        print(resultado)
+     
+
         # self.set_Alimentos(resultado[5])
         # self.set_Metas(resultado[6])
 

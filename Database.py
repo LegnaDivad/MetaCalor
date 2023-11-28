@@ -2,22 +2,22 @@ import mysql.connector
 import datetime
 
 class Config:
-    def connect(self):
-        self.connection = mysql.connector.connect(
-            host = 'localhost',
-            user = 'root',
-            password = '',
-            port = '3306'
-        )
-        
     # def connect(self):
     #     self.connection = mysql.connector.connect(
-    #         host = '137.184.234.157',
-    #         user = 'metaclrlng23',
-    #         password = 'Clr23BX',
-    #         database = 'metaclr',
+    #         host = 'localhost',
+    #         user = 'root',
+    #         password = '',
     #         port = '3306'
     #     )
+        
+    def connect(self):
+        self.connection = mysql.connector.connect(
+            host = '137.184.234.157',
+            user = 'metaclrlng23',
+            password = 'Clr23BX',
+            database = 'metaclr',
+            port = '3306'
+        )
         
     def close(self):
         self.connection.close()
@@ -39,23 +39,35 @@ class UserDatabase(Config):
         self.connection.commit()
         return not None
     
-    def editarUsuario(self,datos):
-        use = 'USE metaclr'
-        camposTabla = ('Nombre', 'nickname', 'contrasenia', 'TMB', 'Edad', 'Altura', 'Peso', 'Sexo')
-        sql_usuario = f'UPDATE Usuario SET {", ".join([f"{campo} = %s" for campo in camposTabla])} WHERE ID_Usuario = %s'
-        sql_insert_usuario_metas = 'INSERT INTO Usuario_Metas(ID_Usuario, ID_Meta, Fecha_Establecimiento, Progreso) VALUES (%s, %s, %s, %s)'
+    def editarUsuario(self,datos,id):
+        print("Datos: ", datos)
+        print("ID: ", id)
+        use_query = 'USE metaclr'
+        update_query = '''
+            UPDATE Usuario
+            SET Nombre = %s, nickname = %s, contrasenia = %s, TMB = %s, Edad = %s, Altura = %s, Peso = %s, Sexo = %s
+            WHERE ID_Usuario = %s
+        '''
         
         cursor = self.connection.cursor()
-        cursor.execute(use)
-        
-        # No es necesario agregar la ID del usuario al final de los datos
 
-        cursor.execute(sql_usuario, datos)
-        self.connection.commit()
+        try:
+            cursor.execute(use_query)
+            cursor.execute(update_query, tuple(datos) + (id,))
+            self.connection.commit()
+            print(f"Nice: {cursor.rowcount} rows affected")
+            return True  # Return a success indicator if needed
+        except Exception as e:
+            # Handle exceptions, log the error, or return False indicating failure
+            print(f"Error updating user: {e}")
+            self.connection.rollback()
+            return False
 
-        # Si deseas también realizar una inserción en Usuario_Metas, deberías agregar el código correspondiente aquí
-    
-        return not None
+        # Example of usage:
+        # datos = ['NewName', 'NewNickname', 'NewPassword', 'NewTMB', 'NewAge', 'NewHeight', 'NewWeight', 'NewGender']
+        # usuario_id = 123
+        # instance.editarUsuario(datos, usuario_id)
+
 
     def datosUsuario(self,id):
         cursor = self.connection.cursor()
@@ -81,6 +93,15 @@ class UserDatabase(Config):
         else:
             return None
         
+    def get_info(self,id):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        consulta = " SELECT Nombre, Edad, contrasenia, Peso, ID_Usuario FROM Usuario WHERE ID_Usuario = %s"
+        cursor.execute(use)
+        cursor.execute(consulta, (id,))
+        resultado = cursor.fetchone()
+        return resultado
+    
     def obtenerTMB(self,id):
         cursor = self.connection.cursor()
         use = 'USE metaclr'

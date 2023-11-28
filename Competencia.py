@@ -31,7 +31,7 @@ class Competencia(ft.UserControl):
         )
         self.MetaUsuario = ft.Container(
             height=130,width=390,
-            bgcolor='white',
+            bgcolor='#eff1ed',
             border_radius=ft.border_radius.all(14),
             alignment=ft.alignment.center,
             content=ft.Row(
@@ -41,8 +41,10 @@ class Competencia(ft.UserControl):
                     ft.Column(
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            ft.Text('Te encuentras en el lugar: ',color='black',weight=ft.FontWeight.BOLD),
-                            ft.Text('2',color='black',weight=ft.FontWeight.BOLD)
+                            ft.Text('Te encuentras en el lugar: ',color='black',weight=ft.FontWeight.BOLD,size=20),
+                            ft.Row(alignment=ft.alignment.center,controls=[ft.Icon(ft.icons.SPORTS_SCORE_OUTLINED,color='black',size=60),
+                            ft.Text('2°',color='black',weight=ft.FontWeight.BOLD,size=30)]),
+                            
                         ]
                     )
                 ]
@@ -58,15 +60,21 @@ class Competencia(ft.UserControl):
                     ft.Container( ##Para la imagen
                         width=300,
                         height=400,
-                        bgcolor='red',
-                        content=ft.Text('imagen',color='black',)
+
+                        content= ft.Image(
+                                src="/images/gato.PNG",
+                                width=400,
+                                height=145,
+                                fit=ft.ImageFit.CONTAIN,
+                            ),
                     ),
                     ft.Container(
                         expand=4,
                         content=ft.Column(
                             expand=True,
                             controls=[
-                                self.usuario,
+                                ft.Row(controls=[ft.Text("      "),self.usuario,]),
+                                
                                 self.nicknameUsuario,
                                 self.MetaUsuario
                             ]
@@ -79,7 +87,7 @@ class Competencia(ft.UserControl):
         self.metasCumplidasText = ft.Text(color='black',weight=ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
         # -- Cartas de Estadísticas
         self.MetaCumplidas = ft.Container(
-            bgcolor='white',
+            bgcolor='#eff1ed',
             height=220,width=330,
             border_radius=ft.border_radius.all(25),
             alignment=ft.alignment.center,
@@ -102,7 +110,7 @@ class Competencia(ft.UserControl):
         
         self.metasCText = ft.Text(color='black',weight=ft.FontWeight.BOLD,text_align=ft.TextAlign.CENTER)
         self.MetaPorCumplir = ft.Container(
-            bgcolor='white',
+            bgcolor='#eff1ed',
             height=220,width=330,
             border_radius=ft.border_radius.all(25),
             alignment=ft.alignment.center,
@@ -163,7 +171,7 @@ class Competencia(ft.UserControl):
         self.contenedorTop = ft.Container(
             padding=40,
             expand=True,
-            bgcolor='white',
+            bgcolor='#eff1ed',
             border_radius=ft.border_radius.all(15),
             content=ft.Column(
                 expand=True,
@@ -172,21 +180,45 @@ class Competencia(ft.UserControl):
                         expand=1,
                         bgcolor='#E5E5E5',
                         border_radius=ft.border_radius.all(30),
-                        content=ft.Row(
+                        content=ft.Column(
                             expand=True,
                             # alignment=ft.MainAxisAlignment.CENTER,
                             controls=[
                                 ft.Container(
                                     expand=True,
+                                    bgcolor='#040273',
                                     alignment=ft.alignment.center,
-                                    content=ft.Text(size=30,color='black',value='TOP')
-                                )
+                                    content=ft.Text(size=40,color='White',value='TOP',weight=ft.FontWeight.BOLD)
+                                ),
+                                
+
                             ]
                         )
                     ),
-                    ft.Container(
+                    
+       
+                    ft.Column(
                         expand=7,
-                        bgcolor='#E5E5E5',
+                        controls =[
+                            ft.Container(
+                                    expand=True,
+                                    bgcolor='#FFD700',
+                                    alignment=ft.alignment.center,
+                                    content=ft.Text(size=30,color='black',value='First Place')
+                                ),
+                                ft.Container(
+                                    expand=True,
+                                    bgcolor='#C0c0c0',
+                                    alignment=ft.alignment.center,
+                                    content=ft.Text(size=30,color='black',value='Second Place')
+                                ),
+                                ft.Container(
+                                    expand=True,
+                                    bgcolor='#cd7f32',
+                                    alignment=ft.alignment.center,
+                                    content=ft.Text(size=30,color='black',value='Third Place')
+                                ),
+                        ]
                     )
                 ]
             )

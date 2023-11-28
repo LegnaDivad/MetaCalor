@@ -23,8 +23,8 @@ class CartaRegistroAlimento(ft.UserControl):
         
         self.valido = False
         
-        self.nombre = ft.Text(value=f"Nombre: {datos[0]}")
-        self.calorias = ft.Text(value=f"Calorías: {datos[1]}")
+        self.nombre = ft.Text(value=f"Alimento: {datos[0]}",color='white',weight=ft.FontWeight.BOLD)
+        self.calorias = ft.Text(value=f"Kcals: {datos[1]}",color='white',weight=ft.FontWeight.BOLD)
         
         self.cantidadDato = ft.TextField(
             label='Cantidad',
@@ -35,12 +35,12 @@ class CartaRegistroAlimento(ft.UserControl):
                 )
             )
         
-        self.peso = ft.Text(color='white',value=0)
-        self.kcal = ft.Text(color='white',value=0)
-        self.proteina = ft.Text(color='white',value=0)
-        self.lipidos = ft.Text(color='white',value=0)
-        self.hidratos = ft.Text(color='white',value=0)
-        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='white')
+        self.peso = ft.Text(color='black',value=0)
+        self.kcal = ft.Text(color='black',value=0)
+        self.proteina = ft.Text(color='black',value=0)
+        self.lipidos = ft.Text(color='black',value=0)
+        self.hidratos = ft.Text(color='black',value=0)
+        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='black')
         
         self.content = ft.Container(
             expand=False,
@@ -73,7 +73,7 @@ class CartaRegistroAlimento(ft.UserControl):
                     controls=[
                         ft.Container(
                             expand=True,
-                            content=ft.Row(
+                            content=ft.Column(
                                 expand=True,alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                                 controls=[
                                     ft.Row(
@@ -181,16 +181,16 @@ class CartaBuscador(ft.UserControl):
         self.dato = datos
         
         self.valido = False
-        
+        #color en listado de buscador
         self.nombre = ft.Text(value=f'Alimento: {datos[0]} | Categoria: {datos[1]}',text_align='center',color='white')
         self.BotonAgregar = ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30,on_click=self.boton_agregar)
         
-        self.peso = ft.Text(color='white',value=0)
-        self.kcal = ft.Text(color='white',value=0)
-        self.proteina = ft.Text(color='white',value=0)
-        self.lipidos = ft.Text(color='white',value=0)
-        self.hidratos = ft.Text(color='white',value=0)
-        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='white')
+        self.peso = ft.Text(color='black',value=0)
+        self.kcal = ft.Text(color='black',value=0)
+        self.proteina = ft.Text(color='black',value=0)
+        self.lipidos = ft.Text(color='black',value=0)
+        self.hidratos = ft.Text(color='black',value=0)
+        self.unidad = ft.Text(value=f'Unidad: {datos[2]}',color='black')
         
         self.cantidadDato = ft.TextField(
             label='Cantidad',
@@ -357,7 +357,7 @@ class CartaMeta(ft.UserControl):
                             # expand=1,
                             width=200,
                             height=210,
-                            bgcolor='#E5E5E5',
+                            bgcolor='#FFFCF2',
                             border_radius=ft.border_radius.all(13),
                             content=ft.Icon(ft.icons.EMOJI_EVENTS,color='black',size=60)
                         ),
@@ -436,6 +436,7 @@ class CartaPlatillos(ft.UserControl):
         dialog.data = e.control.data
         self.route.page.dialog = dialog
         dialog.open = True
+        self.route.page.go('/index')
         self.route.page.update()
         
     def registrarAlimentos(self,e):
@@ -458,7 +459,7 @@ class CartaPlatillos(ft.UserControl):
             mydb.close()
             
             Notification(self.page,'Se han añadido los alimentos!','green').mostrar_msg()
-            self.route.page.go('/index')
+           
 
     
     def build(self):
@@ -749,7 +750,7 @@ class CartaBuscadorEjercicios(ft.UserControl):
                 return
             
             Notification(self.page,'Se ha registrado el ejercicio correctamente!','green').mostrar_msg()
-            self.route.page.go('/registro_ejercicios')
+            self.route.page.go('/Index')
         else:
             Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
 
@@ -767,8 +768,8 @@ class CartaRegistroIngrediente(ft.UserControl):
         self.botonModificar = ft.IconButton(icon=ft.icons.EDIT,icon_color='blue')
         self.botonEliminar = ft.IconButton(icon=ft.icons.DELETE_OUTLINE,icon_color='red')
         
-        self.nombre = ft.Text(value=f"Nombre: {datos['nombre']}")
-        self.calorias = ft.Text(value=f"Calorías: {datos['kcal']}")
+        self.nombre = ft.Text(value=f"Nombre: {datos['nombre']}",color='white',weight=ft.FontWeight.BOLD)
+        self.calorias = ft.Text(value=f"Calorías: {datos['kcal']}",color='white',weight=ft.FontWeight.BOLD)
         
         self.carta = ft.Card(
 
@@ -815,7 +816,7 @@ class CartaPlatilloBuscador(ft.UserControl):
         
         self.valido = False
         
-        self.nombre = ft.Text(value=f'Alimento: {datos[0]} | Categoria: {datos[1]}',text_align='center',color='white')
+        self.nombre = ft.Text(value=f'Alimento: {datos[0]} | Categoria: {datos[1]}',text_align='center',color='white',weight=ft.FontWeight.BOLD)
         self.BotonAgregar = ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30,on_click=self.boton_agregar)
         
         self.peso = ft.Text(color='white',value=0)
