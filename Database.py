@@ -2,22 +2,22 @@ import mysql.connector
 import datetime
 
 class Config:
-    # def connect(self):
-    #     self.connection = mysql.connector.connect(
-    #         host = 'localhost',
-    #         user = 'root',
-    #         password = '',
-    #         port = '3306'
-    #     )
-        
     def connect(self):
         self.connection = mysql.connector.connect(
-            host = '137.184.234.157',
-            user = 'metaclrlng23',
-            password = 'Clr23BX',
-            database = 'metaclr',
+            host = 'localhost',
+            user = 'root',
+            password = '',
             port = '3306'
         )
+        
+    # def connect(self):
+    #     self.connection = mysql.connector.connect(
+    #         host = '137.184.234.157',
+    #         user = 'metaclrlng23',
+    #         password = 'Clr23BX',
+    #         database = 'metaclr',
+    #         port = '3306'
+    #     )
         
     def close(self):
         self.connection.close()
@@ -64,15 +64,6 @@ class UserDatabase(Config):
         else:
             return None
         
-    def get_info(self,id):
-        cursor = self.connection.cursor()
-        use = 'USE metaclr'
-        consulta = " SELECT Nombre, Edad, contrasenia, Peso, ID_Usuario FROM Usuario WHERE ID_Usuario = %s"
-        cursor.execute(use)
-        cursor.execute(consulta, (id,))
-        resultado = cursor.fetchone()
-        return resultado        
-
     def obtenerTMB(self,id):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
@@ -87,12 +78,23 @@ class UserDatabase(Config):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
         cursor.execute(use)
-        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos,RA.Fecha_Registro,RA.ID_RegistroAlimento,A.Categoria
+        sql = '''SELECT A.Alimento,RA.Total_Calorias,RA.Horario,RA.Total_proteinas,RA.Total_lipidos,RA.Total_hidratos,RA.Fecha_Registro,RA.ID_RegistroAlimento,A.Categoria,A.ID_Alimento
         FROM Registro_Alimentos AS RA
         JOIN Alimentos AS A ON A.ID_Alimento = RA.ID_Alimento
         WHERE RA.ID_Usuario = %s ORDER BY RA.Fecha_Registro DESC'''
         cursor.execute(sql, (id,))
         return cursor.fetchall()
+    
+    def modificarRegistro(self,datos):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''UPDATE Registro_Alimentos
+        SET Total_Calorias = %s,Total_Lipidos = %s, Total_Proteinas = %s, Total_Hidratos = %s
+        WHERE ID_RegistroAlimento = %s AND ID_Usuario = %s'''
+        cursor.execute(sql,datos)
+        self.connection.commit()
+        return not None
     
     def obtenerRegistrosSemana(self, id, fecha):
         cursor = self.connection.cursor()
@@ -130,6 +132,17 @@ class FoodDatabase(Config):
         sql = "SELECT Alimento, Categoria,Unidad,Cantidad,Energia_kcal,Proteina_g,Lipidos_g,Hidratos_de_carbono_g,Peso_bruto_g,ID_Alimento FROM Alimentos WHERE Alimento LIKE %s"
         cursor.execute(sql, (f'%{dato}%',))
         return cursor.fetchall()
+    
+    def obtenerAlimentoId(self,id,idAlimento):
+        cursor = self.connection.cursor()
+        use = 'USE metaclr'
+        cursor.execute(use)
+        sql = '''SELECT A.Alimento,A.Categoria,A.Unidad,A.Cantidad,A.Energia_kcal,A.Proteina_g,A.Lipidos_g,A.Hidratos_de_carbono_g,A.Peso_bruto_g,A.ID_Alimento
+        FROM Alimentos A
+        JOIN Registro_Alimentos RA ON RA.ID_Alimento = A.ID_Alimento
+        WHERE RA.ID_Alimento = %s AND RA.ID_RegistroAlimento = %s'''
+        cursor.execute(sql, (id,idAlimento))
+        return cursor.fetchone()
     
     def obtenerPlatillos(self,id):
         cursor = self.connection.cursor()
