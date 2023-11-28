@@ -1103,4 +1103,75 @@ class CartaIngredienteBuscador(CartaBuscador):
             self.route.page.go('/crear_platillo')
         else:
             Notification(self.page,'Debes de registrar una cantidad valida!','red').mostrar_msg()
+
+    
+class CartaInforme(ft.UserControl):
+    def __init__(self, route, CalConsumidas, calQuemadas, Fecha):
+        super().__init__()
+        self.route = route
+        self.fecha = Fecha
+        self.calQuemadas = calQuemadas
+        self.CalConsumidas = CalConsumidas
+        
+        valCalQuem = 0
+        valCalCom = 0
+
+        if self.calQuemadas > self.CalConsumidas:
+            valCalQuem = 1
+            valCalCom = self.CalConsumidas / self.calQuemadas
+        else:
+            valCalQuem = self.calQuemadas / self.CalConsumidas
+            valCalCom =  1
+
+        self.barraCon = ft.ProgressBar(value=valCalCom,height=10, width = 400, color=ft.colors.GREEN_500, bgcolor=ft.colors.with_opacity(0, '#ff6666'))
+        self.barraQuem = ft.ProgressBar(value=valCalQuem, height=10, width = 400, color='#900C3F', bgcolor=ft.colors.with_opacity(0, '#ff6666'))
+        self.columnaBarras = ft.Container(
+            content= ft.Column(
+                controls=[
+                    self.barraCon, self.barraQuem
+                ]
+            )
+        )
+
+        años, meses, días = self.descomponer_timedelta(self.fecha)
+        self.columnaTexto = ft.Container(
+             content= ft.Column(
+                controls=[
+                    ft.Text(value="{:.2f} Kiloalorias Consumidas".format(self.CalConsumidas),color= 'white'),
+                    ft.Text(value="{:.2f} Kilocalorias Quemadas".format(self.calQuemadas),color= 'white')
+                ]
+            )
+        )
+        
+        self.carta = ft.Card(
+            content= ft.Container(
+                padding=10,
+                content=ft.Row(
+                    controls=[
+                        ft.Container(
+                            expand=True,
+                            content=ft.Column(
+                                        controls=[
+                                        ft.Text(value="Calorias del Dia {} de {} del {}".format(días, meses, años),color= 'orange'),
+                                            ft.Row(spacing=20,alignment=ft.MainAxisAlignment.CENTER,
+                                            controls=[
+                                            self.columnaTexto,
+                                            self.columnaBarras
+                                        ]
+                                    )
+                                ]
+                            )
+                        )
+                    ]
+                )
+            ),
+            color="#355E3B"
+        )
+
+    def descomponer_timedelta(self, delta):
+        return delta.year, delta.month, delta.day
+    
+    def build(self):
+        return self.carta
+
         
