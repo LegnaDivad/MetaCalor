@@ -36,6 +36,22 @@ class Register(UserControl):
                 dropdown.Option(text='Mujer'),
             ]
         )
+        self.actividad = Dropdown(
+            width=160,
+            label="Actividad Física",
+            hint_text="Actividad Física",
+            # text_style=TextStyle(color=self.GRIS),
+            # label_style=TextStyle(color=self.GRIS),
+            suffix_icon=icons.ARROW_DROP_DOWN,
+            options=[
+                dropdown.Option(text='Poco'),
+                dropdown.Option(text='Ligero'),
+                dropdown.Option(text='Moderado'),
+                dropdown.Option(text='Fuerte'),
+                dropdown.Option(text='Extremo'),
+                # dropdown.Option(text='Mujer'),
+            ]
+        )
 
         self.TMB = None    
         
@@ -57,7 +73,7 @@ class Register(UserControl):
             
             content=Container(
                 bgcolor="white",
-                height=700,width=700,
+                height=750,width=700,
                 border_radius=border_radius.all(11),
                 content=Column(
                     alignment=MainAxisAlignment.CENTER,
@@ -71,6 +87,7 @@ class Register(UserControl):
                         self.contraseniaRep,
                         row,
                         row2,
+                        self.actividad,
                         # self.genero,
                         self.botonRegistro,
                         TextButton(text='Iniciar Sesión',style=ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=lambda _: self.page.go('/')),
@@ -87,13 +104,29 @@ class Register(UserControl):
             )
         )
         
-    def calcularTMB(self,genero):
+    def calcularTMB(self,genero,tipoAct):
         if genero == 'Hombre':
-            self.TMB = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
+            tmb = 88.362 + (13.397*float(self.peso.value)) + (4.799*float(self.altura.value)) - (5.677*float(self.edad.value))
             return self.TMB
         elif genero == 'Mujer':
-            self.TMB = 447.593 + (9.247 * float(self.peso.value)) + (3.098 * float(self.altura.value)) - (4.330 * float(self.edad.value))
-            return self.TMB
+            tmb = 447.593 + (9.247 * float(self.peso.value)) + (3.098 * float(self.altura.value)) - (4.330 * float(self.edad.value))
+            
+        if tipoAct == 'Poco':
+            factor_actividad = 1.2
+        elif tipoAct == 'Ligero':
+            factor_actividad = 1.375
+        elif tipoAct == 'Moderado':
+            factor_actividad = 1.55
+        elif tipoAct == 'Fuerte':
+            factor_actividad = 1.725
+        elif tipoAct == 'Extremo':
+            factor_actividad = 1.9
+        else:
+            return "Tipo de actividad no válido"
+
+        self.TMB = tmb * factor_actividad
+        return self.TMB
+
         
     def registrarUsuario(self,e):
         try:
@@ -105,7 +138,7 @@ class Register(UserControl):
             Notification(self.page, 'Has dejado valores vacios o son inválidos!', 'red').mostrar_msg()
             return
 
-        calculoTMB = self.calcularTMB(self.genero.value)
+        calculoTMB = self.calcularTMB(self.genero.value,self.actividad.value)
 
         if(nombre.isalpha() == False):
             Notification(self.page,'El nombre no puede contener números!','red').mostrar_msg()
