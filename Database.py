@@ -33,13 +33,30 @@ class UserDatabase(Config):
         qntd = ('%s, %s, %s, %s, %s, %s, %s, %s')
         sql_usuario = f'INSERT INTO Usuario({camposTabla}) VALUES ({qntd})'
         sql_insert_usuario_metas = 'INSERT INTO Usuario_Metas(ID_Usuario, ID_Meta, Fecha_Establecimiento, Progreso) VALUES (%s, %s, %s, %s)'
-
         cursor = self.connection.cursor()
         cursor.execute(use)
         cursor.execute(sql_usuario,datos)
         self.connection.commit()
         return not None
     
+    def editarUsuario(self,datos):
+        use = 'USE metaclr'
+        camposTabla = ('Nombre', 'nickname', 'contrasenia', 'TMB', 'Edad', 'Altura', 'Peso', 'Sexo')
+        sql_usuario = f'UPDATE Usuario SET {", ".join([f"{campo} = %s" for campo in camposTabla])} WHERE ID_Usuario = %s'
+        sql_insert_usuario_metas = 'INSERT INTO Usuario_Metas(ID_Usuario, ID_Meta, Fecha_Establecimiento, Progreso) VALUES (%s, %s, %s, %s)'
+        
+        cursor = self.connection.cursor()
+        cursor.execute(use)
+        
+        # No es necesario agregar la ID del usuario al final de los datos
+
+        cursor.execute(sql_usuario, datos)
+        self.connection.commit()
+
+        # Si deseas también realizar una inserción en Usuario_Metas, deberías agregar el código correspondiente aquí
+    
+        return not None
+
     def datosUsuario(self,id):
         cursor = self.connection.cursor()
         use = 'USE metaclr'

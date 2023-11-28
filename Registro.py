@@ -176,7 +176,10 @@ class Register(UserControl):
         
         mydb = UserDatabase(self.route)
         mydb.connect()
-        resultado = mydb.registrarUsuario(datos)
+        if self.editing == True:
+            resultado = mydb.editarUsuario(datos)
+        else:
+            resultado = mydb.registrarUsuario(datos)
         mydb.close()
         
         if resultado is None:
@@ -199,7 +202,7 @@ class Register(UserControl):
                 self.confirmacion = "registrado"
                 Editing = False
             else:
-                self.path = "/Perfil"
+                self.path = "/perfil"
                 self.editing = True
                 self.titulo = "Editar Perfil"
                 self.confirmacion = "editado"

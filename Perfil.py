@@ -206,13 +206,6 @@ class Perfil(UserControl):
 
 
     def EditarDatos(self,e):
-        print('Editar Datos')
-        print(self.nombre.value)
-        print(self.edad.value)
-        print(self.contrasena.value)
-        print(self.peso.value)
-        print(self.id.value)
-
         global Editing
         Editing = True
         self.page.go('/registro')    
@@ -228,6 +221,7 @@ class Perfil(UserControl):
         self.set_Contrasena(resultado[2])
         self.set_Peso(resultado[3])
         self.set_ID(resultado[4])
+        print(resultado)
         # self.set_Alimentos(resultado[5])
         # self.set_Metas(resultado[6])
 
