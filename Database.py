@@ -188,7 +188,7 @@ class UserDatabase(Config):
         cursor.execute(sql, (id,))
         return cursor.fetchone()
     
-     def obtenerConsumoSemana(self, id, fecha):
+    def obtenerConsumoSemana(self, id, fecha):
         cursor = self.connection.cursor()
         use = 'USE metaclr'
         cursor.execute(use)

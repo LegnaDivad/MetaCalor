@@ -98,7 +98,7 @@ class Informe(ft.UserControl):
         
         self.informeEjercicios = ft.Container(
             border_radius=ft.border_radius.all(13),
-            expand=True,bgcolor='#023020', padding =20, border_radius=13,
+            expand=True,bgcolor='#023020', padding =20, 
             content= ft.Column(
                 controls=[ft.Text("Informe de Quema de Calorias Semanal:"),self.listView]
             )
