@@ -2,6 +2,7 @@ import mysql.connector
 import datetime
 
 class Config:
+    
     # def connect(self):
     #     self.connection = mysql.connector.connect(
     #         host = 'localhost',

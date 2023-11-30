@@ -400,6 +400,7 @@ class CartaPlatillos(ft.UserControl):
         self.mostrarKcal = ft.Text(value=datos[3])
         
         self.BotonAgregar = ft.IconButton(icon=ft.icons.ADD,icon_color='GREEN',icon_size=30,on_click=self.boton_agregar)
+        self.BotonEliminar = ft.IconButton(icon=ft.icons.DELETE_OUTLINE,icon_color='red',icon_size=30)
         
         self.content = ft.ResponsiveRow(
             controls=[
@@ -425,7 +426,11 @@ class CartaPlatillos(ft.UserControl):
                                     self.kcal,
                                 ]
                             ),
-                            self.BotonAgregar
+                            ft.Row([
+                                self.BotonAgregar,
+                                self.BotonEliminar
+                            ])
+                            
                         ]
                     )
                 ),
@@ -436,7 +441,6 @@ class CartaPlatillos(ft.UserControl):
         dialog.data = e.control.data
         self.route.page.dialog = dialog
         dialog.open = True
-        self.route.page.go('/index')
         self.route.page.update()
         
     def registrarAlimentos(self,e):
@@ -459,7 +463,7 @@ class CartaPlatillos(ft.UserControl):
             mydb.close()
             
             Notification(self.page,'Se han añadido los alimentos!','green').mostrar_msg()
-           
+            self.route.page.go('/index')
 
     
     def build(self):
@@ -1174,5 +1178,3 @@ class CartaInforme(ft.UserControl):
     
     def build(self):
         return self.carta
-
-        
