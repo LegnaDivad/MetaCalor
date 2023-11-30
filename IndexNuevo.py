@@ -93,7 +93,7 @@ class Index(ft.UserControl):
                                             ft.Icon(),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador'),icon_size=30),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='desayuno',on_click=self.tomarHorarioPlatillo,icon_size=30),
                                                     ft.Text('Registrar \nPlatillo',color='white'),
                                                 ]
                                             ),
@@ -202,7 +202,7 @@ class Index(ft.UserControl):
                                             ft.Icon(),
                                             ft.Row(
                                                 controls=[
-                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',on_click=lambda _: self.page.go('/buscador'),icon_size=30),
+                                                    ft.IconButton(icon=ft.icons.DINNER_DINING,icon_color='green',key='cena',on_click=self.tomarHorarioPlatillo,icon_size=30),
                                                     ft.Text('Registrar \nPlatillo',color='white'),
                                                 ]
                                             ),
@@ -260,9 +260,9 @@ class Index(ft.UserControl):
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     controls=[
                                         ft.ElevatedButton(text='           Añadir Recordatorio              ',icon=ft.icons.ACCESS_ALARM,style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.boton_agregar),
-                                        ft.Row([
-                                            ft.ElevatedButton(text='    Retrasar dia    ',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia2),
-                                            ft.ElevatedButton(text='    Adelantar    ',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia)])
+                                        # ft.Row([
+                                        #     ft.ElevatedButton(text='    Retrasar dia    ',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia2),
+                                        #     ft.ElevatedButton(text='    Adelantar    ',style=ft.ButtonStyle(color="#26587E",bgcolor="#E3E9F0"),on_click=self.modDia)])
                                         ]
                                     ),
                             ]

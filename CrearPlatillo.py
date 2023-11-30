@@ -9,8 +9,8 @@ class CreadorPlatillos(ft.UserControl):
         self.route = route
         
         self.GRIS = '#252422'
-        self.lvIngredientes = ft.ListView(expand=True,padding=20,auto_scroll=True)
-        self.lvPlatillos = ft.ListView(expand=True,padding=20,auto_scroll=True)
+        self.lvIngredientes = ft.ListView(expand=4,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
+        self.lvPlatillos = ft.ListView(expand=4,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
         self.listaIngredientes = []
         
         self.SearchList = ft.ListView(expand=1,padding=20,auto_scroll=ft.ScrollMode.ALWAYS)
@@ -39,7 +39,7 @@ class CreadorPlatillos(ft.UserControl):
             expand=True,
             color='#50C878',
             max_length=99,
-            input_filter=ft.TextOnlyInputFilter(),
+            input_filter=ft.InputFilter(regex_string=r"[a-z,.;'1-9 ]"),
             height= 70, border_color='#50C878', bgcolor='white'
             )
         
@@ -58,7 +58,7 @@ class CreadorPlatillos(ft.UserControl):
             expand=True,
             color='#50C878',
             max_length=255,
-            input_filter=ft.TextOnlyInputFilter(),
+            input_filter=ft.InputFilter(regex_string=r"[a-z,.;'1-9 ]"),
             height= 70, border_color='#50C878', bgcolor='white'
         )
         
@@ -204,6 +204,10 @@ class CreadorPlatillos(ft.UserControl):
             content=ft.Column(
                 expand=True,
                 controls=[
+                    ft.Container(
+                        expand=1,
+                        content=ft.Text('Tus platillos',weight='bold',size=25)
+                    ),
                     self.lvPlatillos
                 ]
             )
@@ -301,7 +305,13 @@ class CreadorPlatillos(ft.UserControl):
             Notification(self.page,'Ha ocurrido un error!','red').mostrar_msg()
             return
         Notification(self.page,'Se ha registrado correctamente!','green').mostrar_msg()
-        self.route.page.go('/index')
+        self.lvPlatillos.clean()
+        self.lvIngredientes.clean()
+        self.listaIngredientes.clear()
+        self.SearchTextDescripción.value = None
+        self.SearchTextNombre.value = None
+        self.route.page.update()
+        self.inicializar()
         
 
     def cargarPlatillos(self):
